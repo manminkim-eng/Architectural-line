@@ -781,10 +781,19 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border2);padding:2
   @page{size:A4 portrait;margin:14mm 12mm 20mm 14mm}
 }
 #a4-print-zone{display:none}
+
+/* PWA 배너 슬라이드 업 애니메이션 */
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
 </style>
 <link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAAAIAC9AwAAFgAAAIlQTkcNChoKAAAADUlIRFIAAAAQAAAAEAgGAAAAH/P/YQAAAQhpQ0NQSUNDIFByb2ZpbGUAAHicY2BgPMEABCwGDAy5eSVFQe5OChGRUQrsDxgYgRAMEpOLCxhwA6Cqb9cgai/r4lGHC3CmpBYnA+kPQKxSBLQcaKQIkC2SDmFrgNhJELYNiF1eUlACZAeA2EUhQc5AdgqQrZGOxE5CYicXFIHU9wDZNrk5pckIdzPwpOaFBgNpDiCWYShmCGJwZ3AC+R+iJH8RA4PFVwYG5gkIsaSZDAzbWxkYJG4hxFQWMDDwtzAwbDuPEEOESUFiUSJYiAWImdLSGBg+LWdg4I1kYBC+wMDAFQ0LCBxuUwC7zZ0hHwjTGXIYUoEingx5DMkMekCWEYMBgyGDGQCm1j8/R2zgUAAAAnBJREFUeJwtkr1uJFUUhL9z7+2eHnvs1Zi1pRV/shcSAgQSGwASIeINeDaehQgyUiIkBwQWaNfaXZvxeKa77z2nCMYlneQk9amq7NOvvlElcXp5RbdcMtXK3BpzBJSOViuKIJsR7iQz9o87Vpt3HCVR6Ad+/PknXq1HpmmkujN5ZWqVKRx5IVrFwpEHpkAM/Prv59S//qGcXr3k2/Ujr97+yVgWmFe6FCRzqgJLAX2AGgonEGdppP/kkl+ue0qYaHViLAOPVlj0xuutM9fE+cqpLTCcCGGAh4goFAX73SNl9GDXnCynM3j9fuLNJtjNgAcXJ05zJwGGwESS00J4c8rDfmRyR964uXPq3PjsubjbiYRQOMgxCelAggkkMA4ENSY2u8r1beGjU2OsQa0zm1ncvINV39jPIAU5w9fnQggJipnR6sxRH7w4mVkvhSkYq/EwBsmC2we4OHE+XovRAYMWQcqZgjtqDQ9HAf/tRDyh3u0Tpwu4uU98sAqeDZVUMwsLwMldpmRLyGfcK7s5US3IFiyLs14IYXxx4dxv4bfrTJA4jsz9mZEzlGwGUdnuJ7b7wvkKdlNQaNxuOzAwOpoMJLpizN6x94J7o+y3W/CenIKTQZwOASQep8x3lxPDIiEJO6yARmbNzH0ETUaJeaZ54XgIri6EyXh25AjhWjB6HKo0QxRkmZ2cYpnjxYKSSqHXzEITnaAzEeJJjiRSSojD0yX6NnK8hOUwUM4Mfn+/4uWL57TUIYIwww5N4xg6BIHskMPx8oxrfUi8+QP78vsf9Db17IcO5omAg1c2LGfCgJKfLlEMjhYD0/XfHG02/A+0hZeGpJWTdgAAAABJRU5ErkJggg==">
-<link rel="apple-touch-icon" sizes="180x180" href="icons/icon-192x192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+<meta name="msapplication-TileImage" content="icons/icon-144x144.png">
+<meta name="msapplication-TileColor" content="#0B1B2E">
 </head>
 <body>
 
@@ -802,6 +811,13 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border2);padding:2
       <span class="ver-pill">MANMIN-Ver1.0</span>
       <button class="hdr-btn preview" onclick="openPreview()">📱 <span class="btn-txt">미리보기</span></button>
       <button class="hdr-btn" onclick="openA4Preview()" style="background:rgba(0,194,168,.12);border-color:rgba(0,194,168,.4);color:var(--teal2);">📄 <span class="btn-txt">A4 출력</span></button>
+      <button id="pwa-install-btn" onclick="pwaTriggerInstall()"
+        style="display:none;align-items:center;gap:5px;font-size:11px;font-weight:700;
+        font-family:var(--font-base);border-radius:7px;padding:6px 12px;cursor:pointer;
+        transition:all .2s;white-space:nowrap;border:1px solid rgba(0,194,168,.4);
+        color:#0B1B2E;background:linear-gradient(135deg,#00C2A8,#E8A020);">
+        📲 앱 설치
+      </button>
       <button class="hdr-btn gold" onclick="openModal('guide')">📋 이용안내</button>
       <a class="hdr-btn teal" href="https://manminkim-eng.github.io/KIMMANMIN/">🏠 홈</a>
     </div>
@@ -2228,8 +2244,266 @@ function printA4(){
 
 /* 리사이즈 — A4 transform 없으므로 처리 불필요 */
 
+
+/* ═══════════════════════════════════════════════════════
+   PWA 설치 & Service Worker  —  MANMIN 일조사선 Ver1.0
+═══════════════════════════════════════════════════════ */
+(function(){
+  'use strict';
+
+  var _deferredPrompt = null;
+  var _swRegistration = null;
+  var _isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  var _isStandalone = window.matchMedia('(display-mode:standalone)').matches
+                   || navigator.standalone === true;
+
+  /* ── 1. Service Worker 등록 ─────────────────────── */
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('./sw.js')
+        .then(function(reg){
+          _swRegistration = reg;
+          console.log('[PWA] SW registered:', reg.scope);
+
+          /* 업데이트 감지 */
+          reg.addEventListener('updatefound', function(){
+            var newWorker = reg.installing;
+            newWorker.addEventListener('statechange', function(){
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                document.getElementById('pwa-update-bar').style.display = 'block';
+              }
+            });
+          });
+        })
+        .catch(function(err){ console.warn('[PWA] SW error:', err); });
+
+      /* 페이지 새로고침 감지 */
+      navigator.serviceWorker.addEventListener('controllerchange', function(){
+        window.location.reload();
+      });
+    });
+  }
+
+  /* ── 2. beforeinstallprompt 이벤트 캡처 ─────────── */
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault();
+    _deferredPrompt = e;
+    console.log('[PWA] beforeinstallprompt captured');
+
+    /* 이미 설치된 경우 무시 */
+    if (_isStandalone) return;
+
+    /* 설치 버튼 표시 */
+    _showInstallUI();
+  });
+
+  /* ── 3. 설치 완료 이벤트 ────────────────────────── */
+  window.addEventListener('appinstalled', function(){
+    console.log('[PWA] App installed!');
+    _deferredPrompt = null;
+    _hideInstallUI();
+    if (typeof showToast === 'function') {
+      showToast('🎉 앱이 홈 화면에 설치되었습니다!');
+    }
+  });
+
+  /* ── 4. iOS 감지 & 안내 ──────────────────────────── */
+  if (_isIOS && !_isStandalone) {
+    var _iosDismissed = false;
+    try { _iosDismissed = !!sessionStorage.getItem('ios-guide-dismissed'); } catch(e){}
+
+    if (!_iosDismissed) {
+      /* iOS는 beforeinstallprompt 미지원 → 별도 안내 */
+      setTimeout(function(){
+        var hdrBtn = document.getElementById('pwa-install-btn');
+        if (hdrBtn) hdrBtn.style.display = 'flex';
+      }, 2000);
+    }
+  }
+
+  /* ── 5. standalone 모드면 UI 전부 숨기기 ─────────── */
+  if (_isStandalone) {
+    document.addEventListener('DOMContentLoaded', function(){
+      _hideInstallUI();
+    });
+  }
+
+  /* ── 내부 헬퍼 ──────────────────────────────────── */
+  function _showInstallUI(){
+    /* 헤더 버튼 */
+    var hdrBtn = document.getElementById('pwa-install-btn');
+    if (hdrBtn) hdrBtn.style.display = 'flex';
+
+    /* 하단 배너 (1.5초 딜레이 후 노출) */
+    var barDismissed = false;
+    try { barDismissed = !!sessionStorage.getItem('pwa-bar-dismissed'); } catch(e){}
+    if (!barDismissed) {
+      setTimeout(function(){
+        var bar = document.getElementById('pwa-install-bar');
+        if (bar) {
+          bar.style.display = 'block';
+          bar.style.animation = 'slideUp .35s ease';
+        }
+      }, 1500);
+    }
+  }
+
+  function _hideInstallUI(){
+    ['pwa-install-btn','pwa-install-bar','ios-install-guide'].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
+  }
+
+  /* ── 6. 전역 공개 함수 ──────────────────────────── */
+
+  /* 실제 설치 프롬프트 실행 */
+  window.pwaTriggerInstall = function(){
+    if (_isIOS) {
+      /* iOS: Safari 안내 팝업 표시 */
+      var bar = document.getElementById('pwa-install-bar');
+      if (bar) bar.style.display = 'none';
+      var guide = document.getElementById('ios-install-guide');
+      if (guide) guide.style.display = 'block';
+      return;
+    }
+
+    if (!_deferredPrompt) {
+      /* 이미 설치됐거나 지원 안됨 */
+      if (_isStandalone) {
+        if (typeof showToast === 'function') showToast('✅ 이미 앱으로 설치되어 있습니다!');
+      } else {
+        alert('📱 수동 설치 방법\n\n• Android Chrome: 주소창 오른쪽 메뉴 → "앱 설치"\n• PC Chrome/Edge: 주소창 우측 설치 아이콘 클릭');
+      }
+      return;
+    }
+
+    _deferredPrompt.prompt();
+    _deferredPrompt.userChoice.then(function(choice){
+      console.log('[PWA] User choice:', choice.outcome);
+      if (choice.outcome === 'accepted') {
+        if (typeof showToast === 'function') showToast('🎉 설치 완료! 홈 화면을 확인하세요.');
+      }
+      _deferredPrompt = null;
+      _hideInstallUI();
+    });
+  };
+
+  /* 하단 배너 닫기 */
+  window.pwaDismiss = function(){
+    var bar = document.getElementById('pwa-install-bar');
+    if (bar) { bar.style.display = 'none'; }
+    try { sessionStorage.setItem('pwa-bar-dismissed','1'); } catch(e){}
+  };
+
+  /* iOS 안내 닫기 */
+  window.pwaIosDismiss = function(){
+    var guide = document.getElementById('ios-install-guide');
+    if (guide) guide.style.display = 'none';
+    try { sessionStorage.setItem('ios-guide-dismissed','1'); } catch(e){}
+  };
+
+  /* 업데이트 실행 */
+  window.pwaUpdate = function(){
+    if (_swRegistration && _swRegistration.waiting) {
+      _swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
+    } else {
+      window.location.reload();
+    }
+  };
+
+})();
+
 </script>
 
+
+
+<!-- ══ PWA 설치 배너 ══ -->
+<div id="pwa-install-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;
+  z-index:9000;background:linear-gradient(135deg,#0B1B2E 0%,#112240 100%);
+  border-top:1px solid rgba(0,194,168,.3);padding:12px 16px;
+  box-shadow:0 -4px 20px rgba(0,0,0,.4);
+  font-family:'Noto Sans KR',sans-serif;">
+  <div style="max-width:640px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+    <img src="icons/icon-48x48.png" width="44" height="44"
+         style="border-radius:10px;flex-shrink:0;"
+         alt="앱 아이콘">
+    <div style="flex:1;min-width:0;">
+      <div style="font-size:13px;font-weight:800;color:#E8F8F6;line-height:1.3;">
+        일조사선 — 앱으로 설치하기
+      </div>
+      <div style="font-size:11px;color:rgba(232,248,246,.6);margin-top:2px;">
+        오프라인에서도 사용 · 홈 화면 바로가기 · 빠른 실행
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-shrink:0;">
+      <button id="pwa-bar-install-btn" onclick="pwaTriggerInstall()"
+        style="padding:9px 18px;border-radius:8px;border:none;cursor:pointer;
+        font-size:12px;font-weight:800;font-family:inherit;
+        background:linear-gradient(135deg,#00C2A8,#008c7d);
+        color:#0B1B2E;box-shadow:0 2px 10px rgba(0,194,168,.4);">
+        📲 지금 설치
+      </button>
+      <button onclick="pwaDismiss()"
+        style="padding:9px 14px;border-radius:8px;
+        border:1px solid rgba(255,255,255,.15);cursor:pointer;
+        font-size:12px;font-weight:700;font-family:inherit;
+        background:rgba(255,255,255,.06);color:rgba(232,248,246,.7);">
+        나중에
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- iOS 설치 안내 -->
+<div id="ios-install-guide" style="display:none;position:fixed;bottom:0;left:0;right:0;
+  z-index:9001;background:linear-gradient(135deg,#0B1B2E,#112240);
+  border-top:1px solid rgba(0,194,168,.3);padding:16px;
+  box-shadow:0 -4px 20px rgba(0,0,0,.5);
+  font-family:'Noto Sans KR',sans-serif;border-radius:16px 16px 0 0;">
+  <div style="max-width:480px;margin:0 auto;text-align:center;">
+    <div style="font-size:14px;font-weight:800;color:#E8F8F6;margin-bottom:8px;">
+      📱 iPhone/iPad에 설치하기
+    </div>
+    <div style="font-size:12px;color:rgba(232,248,246,.7);line-height:1.8;">
+      <span style="background:rgba(0,194,168,.15);padding:2px 8px;border-radius:5px;margin:0 3px;">
+        Safari 하단
+      </span>
+      <strong style="color:#00C2A8;">공유 버튼 ⬆️</strong> 탭 후<br>
+      <strong style="color:#E8A020;">"홈 화면에 추가"</strong> 선택
+    </div>
+    <button onclick="pwaIosDismiss()"
+      style="margin-top:12px;padding:8px 24px;border-radius:8px;border:none;cursor:pointer;
+      font-size:12px;font-weight:700;font-family:inherit;
+      background:rgba(255,255,255,.1);color:rgba(232,248,246,.7);">
+      닫기
+    </button>
+  </div>
+</div>
+
+<!-- 업데이트 알림 배너 -->
+<div id="pwa-update-bar" style="display:none;position:fixed;top:64px;left:0;right:0;
+  z-index:8999;background:linear-gradient(135deg,#E8A020,#c47a10);
+  padding:10px 16px;box-shadow:0 2px 12px rgba(232,160,32,.4);
+  font-family:'Noto Sans KR',sans-serif;">
+  <div style="max-width:640px;margin:0 auto;display:flex;align-items:center;gap:12px;">
+    <span style="font-size:12px;font-weight:700;color:#0B1B2E;flex:1;">
+      🔄 새 버전이 있습니다 — 새로고침하면 업데이트됩니다
+    </span>
+    <button onclick="pwaUpdate()"
+      style="padding:6px 14px;border-radius:7px;border:none;cursor:pointer;
+      font-size:11px;font-weight:800;font-family:inherit;
+      background:#0B1B2E;color:#E8A020;">
+      지금 업데이트
+    </button>
+    <button onclick="document.getElementById('pwa-update-bar').style.display='none'"
+      style="padding:6px 10px;border-radius:7px;border:none;cursor:pointer;
+      font-size:11px;font-weight:700;font-family:inherit;
+      background:rgba(11,27,46,.3);color:#0B1B2E;">
+      ✕
+    </button>
+  </div>
+</div>
 
 </body>
 </html>
