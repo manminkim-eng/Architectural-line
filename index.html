@@ -693,20 +693,28 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border2);padding:2
 .a4-viewer{
   flex:1;
   overflow-y:auto;
-  overflow-x:auto;                     /* 가로도 스크롤 허용 */
+  overflow-x:hidden;                   /* 모바일: 가로 스크롤 제거 */
   display:flex;
   flex-direction:column;
-  align-items:center;                  /* 가운데 정렬 */
-  padding:20px 0 40px;                 /* 위아래 여백만 */
+  align-items:center;
+  padding:20px 0 40px;
   background:#1a1a2e;
   scrollbar-width:thin;
   scrollbar-color:rgba(0,194,168,.3) transparent;
-  -webkit-overflow-scrolling:touch;    /* iOS 부드러운 스크롤 */
+  -webkit-overflow-scrolling:touch;
 }
 .a4-viewer::-webkit-scrollbar{width:6px;height:6px}
 .a4-viewer::-webkit-scrollbar-thumb{background:rgba(0,194,168,.3);border-radius:3px}
+
+/* A4 용지 래퍼 — scale 컨테이너 */
+.a4-paper-wrap{
+  width:794px;
+  transform-origin:top center;
+  transition:transform .2s ease;
+  flex-shrink:0;
+}
 .a4-paper{
-  width:794px;                          /* A4 고정폭 — 절대 변경 금지 */
+  width:794px;                          /* A4 실제 폭 — 인쇄용 고정 */
   min-height:1123px;
   background:#fff;
   border-radius:6px;
@@ -715,9 +723,8 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border2);padding:2
   padding:53px 60px 72px;
   font-family:'Noto Sans KR','Malgun Gothic',sans-serif;
   font-size:11px;color:#1a1a1a;line-height:1.7;
-  flex-shrink:0;                        /* 절대 줄어들지 않음 */
+  flex-shrink:0;
   position:relative;
-  /* transform은 JS가 데스크탑 중앙 배치용으로만 사용 */
   transform-origin:top center;
 }
 .a4-doc-title{font-size:20px;font-weight:900;color:#0B3D6B;
@@ -781,6 +788,15 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border2);padding:2
   @page{size:A4 portrait;margin:14mm 12mm 20mm 14mm}
 }
 #a4-print-zone{display:none}
+
+/* ── A4 모달 모바일 반응형 ── */
+@media(max-width:480px){
+  .a4-bar{padding:8px 10px;gap:6px}
+  .a4-bar-title{font-size:11px;gap:5px}
+  .a4-act-btn{padding:7px 10px;font-size:11px;gap:4px}
+  .a4-act-btn .btn-txt-pdf{display:none}  /* PDF 텍스트 숨김 → 아이콘만 */
+  .a4-viewer{padding:12px 0 30px}
+}
 
 /* PWA 배너 슬라이드 업 애니메이션 */
 @keyframes slideUp {
@@ -1330,7 +1346,9 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border2);padding:2
     </div>
   </div>
   <div class="a4-viewer" id="a4-viewer" onclick="event.stopPropagation()">
-    <div class="a4-paper" id="a4-paper"><!-- buildA4Doc() 로 채워짐 --></div>
+    <div class="a4-paper-wrap" id="a4-paper-wrap">
+      <div class="a4-paper" id="a4-paper"><!-- buildA4Doc() 로 채워짐 --></div>
+    </div>
   </div>
 </div>
 
@@ -2199,25 +2217,43 @@ function openA4Preview(){
   const paper = document.getElementById('a4-paper');
   if(!paper) return;
   paper.innerHTML = buildA4Doc();
-  paper.style.transform = 'none';      /* transform 초기화 */
   document.getElementById('a4-modal').classList.add('open');
   document.body.style.overflow = 'hidden';
-  /* 뷰어 상단으로 스크롤 초기화 */
   requestAnimationFrame(function(){
     const v = document.getElementById('a4-viewer');
     if(v) v.scrollTop = 0;
+    scaleA4Paper();
   });
 }
 
 function scaleA4Paper(){
-  /* transform 완전 제거 — DOM 원본 크기 유지 → 스크롤로 전체 확인 */
-  const paper = document.getElementById('a4-paper');
-  if(!paper) return;
-  paper.style.transform    = 'none';
-  paper.style.marginBottom = '';
-  /* viewer minHeight 리셋 */
+  const wrap   = document.getElementById('a4-paper-wrap');
   const viewer = document.getElementById('a4-viewer');
-  if(viewer) viewer.style.minHeight = '';
+  if(!wrap || !viewer) return;
+
+  const A4_W   = 794;                       /* A4 실제 폭(px) */
+  const vw     = viewer.clientWidth || window.innerWidth;
+  const pad    = 16;                        /* 좌우 최소 여백(px) */
+  const avail  = vw - pad * 2;
+
+  if(avail < A4_W){
+    /* 모바일/태블릿: 뷰어 폭에 맞게 축소 */
+    const scale  = avail / A4_W;
+    const scaled = Math.round(1123 * scale); /* 축소된 실제 높이 */
+
+    wrap.style.width        = A4_W + 'px';
+    wrap.style.transform    = 'scale(' + scale + ')';
+    wrap.style.transformOrigin = 'top center';
+    wrap.style.marginBottom = (scaled - 1123) + 'px'; /* 음수 margin으로 여백 보정 */
+    viewer.style.minHeight  = '';
+  } else {
+    /* 데스크탑: 원본 크기 */
+    wrap.style.width        = A4_W + 'px';
+    wrap.style.transform    = 'none';
+    wrap.style.transformOrigin = 'top center';
+    wrap.style.marginBottom = '';
+    viewer.style.minHeight  = '';
+  }
 }
 
 function closeA4(){
@@ -2242,7 +2278,13 @@ function printA4(){
   setTimeout(function(){ pz.innerHTML=''; }, 1200);
 }
 
-/* 리사이즈 — A4 transform 없으므로 처리 불필요 */
+/* 리사이즈 — A4 모달이 열려있으면 재스케일 */
+window.addEventListener('resize', function(){
+  const modal = document.getElementById('a4-modal');
+  if(modal && modal.classList.contains('open')){
+    scaleA4Paper();
+  }
+});
 
 
 /* ═══════════════════════════════════════════════════════
