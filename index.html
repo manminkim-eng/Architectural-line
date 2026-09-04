@@ -581,6 +581,17 @@ footer{border-top-color:#e4e9f0;background:#fff;} .foot-nm{color:#15803d;} .foot
 <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
 <meta name="msapplication-TileImage" content="icons/icon-144x144.png">
 <meta name="msapplication-TileColor" content="#15803d">
+<style id="mm-r24b">/* R24 ①② (2026-09-05 · S10 3-B 소급 · 지시서 §21-1 R24) — 인쇄 시 collapse 표의 우측 세로선 소실 → separate + 셀 자체 선. 화면·JPG·PDF 동일 DOM(§2②). 선색은 기존 값 유지. */
+.a4-tbl,.a4-meta-table{border-collapse:separate;border-spacing:0;border:0;}
+.a4-tbl th,.a4-meta-table th{border:0;border-right:1px solid #bbf7d0;border-bottom:1px solid #bbf7d0;}
+.a4-tbl th:first-child,.a4-meta-table th:first-child{border-left:1px solid #bbf7d0;}
+.a4-tbl tr:first-child th,.a4-meta-table tr:first-child th{border-top:1px solid #bbf7d0;}
+.a4-tbl td,.a4-meta-table td{border:0;border-right:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;}
+.a4-tbl td:first-child,.a4-meta-table td:first-child{border-left:1px solid #e2e8f0;}
+.a4-tbl tr:first-child td,.a4-meta-table tr:first-child td{border-top:1px solid #e2e8f0;}
+.a4-page .mono,.a4-page td.r{font-family:'JetBrains Mono','DM Mono','Noto Sans KR','Malgun Gothic',monospace;}
+@media print{.a4-page .mono,.a4-page td.r{font-family:'JetBrains Mono','DM Mono','Noto Sans KR','Malgun Gothic',Consolas,monospace!important;}}
+</style>
 </head>
 <body>
 
