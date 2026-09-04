@@ -6,7 +6,7 @@
   "display": "standalone",
   "orientation": "portrait-primary",
   "theme_color": "#15803d",
-  "background_color": "#0B1B2E",
+  "background_color": "#f4f6f9",
   "lang": "ko",
   "scope": "./",
   "categories": ["utilities", "productivity"],

@@ -405,6 +405,57 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border2);padding:2
 .foot-desc{font-size:10px;color:var(--text3);line-height:1.6}
 .foot-copy{font-size:9px;color:var(--text3);font-family:var(--font-mono)}
 
+/* ══ LIGHT 본문 (v5.0 §3-12 · MIN 2026-09-04 — 다크 Navy×Teal 토큰을 라이트로 재지정 · 입력 규격 통일) ══ */
+:root{
+  --navy:#f4f6f9; --navy2:#ffffff; --navy3:#eef2f7; --navy4:#e4e9f0;
+  --teal:#15803d; --teal2:#16a34a; --teal3:#dcfce7;
+  --gold:#b45309; --gold2:#d97706; --gold3:#fde68a;
+  --orange:#ea580c; --red:#dc2626; --green:#15803d;
+  --slate:#64748b; --slate2:#94a3b8;
+  --border:#e4e9f0; --border2:#edf1f5;
+  --text:#1a2744; --text2:#475569; --text3:#94a3b8;
+  --surf1:#ffffff; --surf2:#f8fafd; --surf3:#f1f5f9;
+  --shadow:0 1px 4px rgba(0,0,0,.05);
+  --glow-t:0 4px 14px rgba(21,128,61,.10); --glow-g:0 4px 14px rgba(180,83,9,.10);
+}
+body::before{display:none;}
+::-webkit-scrollbar-track{background:#f4f6f9} ::-webkit-scrollbar-thumb{background:#cbd5e1}
+.card{border-radius:12px;padding:18px;} .card::before{opacity:.9;}
+.sec-title{color:#1a2744;font-size:15px;margin-bottom:16px;} .sec-title::before{background:linear-gradient(180deg,#15803d,#16a34a);}
+.slabel{font-size:12px;font-weight:700;color:#475569;text-transform:none;letter-spacing:.02em;margin-bottom:7px;}
+.slabel .badge{color:#15803d;background:#dcfce7;border-color:#bbf7d0;}
+/* §3-12 입력 규격 (설비 23 .finput 기준 · MIN 2026-09-04) — 배경 #f8fafd · 1.5px #dde3ed · r7 · 13px/600 · 7px 10px · 높이 38px · 녹색 포커스 링 */
+.mm-sel,.mm-inp{background:#f8fafd;border:1.5px solid #dde3ed;border-radius:7px;color:#1a2744;font-size:13px;font-weight:600;padding:7px 10px;height:38px;min-height:0;line-height:1.3;}
+.mm-sel{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");}
+.mm-sel:focus,.mm-inp:focus{border-color:#15803d;box-shadow:0 0 0 3px rgba(21,128,61,.15);}
+.mm-sel:hover,.mm-inp:hover{border-color:#94a3b8;}
+.mm-inp::placeholder{color:#94a3b8;font-weight:500;}
+.iunit{color:#64748b;font-size:12px;}
+.tog-sl{background:#e4e9f0;border-color:#dde3ed;} .tog input:checked + .tog-sl{background:#15803d;border-color:#15803d;box-shadow:none;}
+.radio-opt label{background:#f8fafd;border:1.5px solid #dde3ed;color:#475569;font-weight:600;}
+.radio-opt input:checked + label{background:#dcfce7;border-color:#15803d;color:#15803d;box-shadow:none;}
+.calc-btn{background:linear-gradient(135deg,#15803d,#16a34a);color:#fff;box-shadow:0 4px 14px rgba(21,128,61,.28);font-size:14px;padding:12px 18px;}
+.calc-btn:hover{box-shadow:0 8px 24px rgba(21,128,61,.32);}
+.reset-btn{color:#475569;background:#fff;border:1.5px solid #dde3ed;} .reset-btn:hover{background:#f8fafd;border-color:#94a3b8;color:#1a2744;}
+.note-box{background:#fffbeb;border-color:#fde68a;color:#92400e;} .note-box strong{color:#b45309;}
+.info-box{background:#f0fdf4;border-color:#bbf7d0;color:#166534;}
+.toggle-row{border-bottom-color:#edf1f5;} .toggle-lbl{color:#1a2744;} .toggle-sub{color:#64748b;}
+.result-ph{color:#64748b;} .ph-txt{color:#475569;}
+.verdict-box{background:#fff;border:1.5px solid #e4e9f0;}
+.v-ok{background:#f0fdf4;border-color:#86efac!important;} .v-ng{background:#fef2f2;border-color:#fca5a5!important;} .v-warn{background:#fffbeb;border-color:#fde68a!important;}
+.v-ng .vt{color:#b91c1c;} .v-warn .vt{color:#b45309;}
+.metric-card{background:#f8fafd;border-color:#e4e9f0;} .metric-card .mv{color:#1a2744;}
+.mj-ok{background:#dcfce7;color:#15803d;} .mj-ng{background:#fee2e2;color:#b91c1c;} .mj-na{background:#e2e8f0;color:#475569;}
+.shadow-table th{background:#f1f5f9;color:#475569;border-bottom:1px solid #e4e9f0;} .shadow-table td{color:#1a2744;border-bottom:1px solid #edf1f5;}
+.shadow-table tr:hover td{background:#f0fdf4;}
+.law-card{background:#fffbeb;border-color:#fde68a;} .law-tag{color:#b45309;} .law-text{color:#1a2744;}
+.info-hd:hover{background:#f0fdf4;} .info-item{border-color:#e4e9f0;background:#fff;}
+footer{border-top-color:#e4e9f0;background:#fff;} .foot-nm{color:#15803d;} .foot-desc,.foot-copy{color:#64748b;}
+.toast{background:#1a2744;color:#fff;border:none;}
+.a4-export-bar{background:#fff;border-color:#e4e9f0;} .bar-lbl{color:#475569;} .bar-hint{color:#94a3b8;}
+#pwa-install-bar,#ios-install-guide{background:#1a2744!important;} 
+
+
 /* ══ A4 계산서 탭 (v5.0 §3-3 · §3-4 · §3-4-1 · §17-2) — 화면 = 인쇄 = JPG 동일 DOM ══ */
 .a4-panel{position:relative;z-index:1;max-width:1320px;margin:0 auto;padding:24px 20px 80px;}
 .a4-export-bar{background:var(--surf1);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
@@ -527,7 +578,7 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border2);padding:2
 <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16x16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
 <meta name="msapplication-TileImage" content="icons/icon-144x144.png">
-<meta name="msapplication-TileColor" content="#0B1B2E">
+<meta name="msapplication-TileColor" content="#15803d">
 </head>
 <body>
 
