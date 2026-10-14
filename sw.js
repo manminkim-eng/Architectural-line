@@ -21,7 +21,7 @@ const mmMatch = (req, opt) => caches.keys()
   .then((ks) => ks.reduce((p, k) => p.then((r) => r || caches.open(k).then((c) => c.match(req, opt))), Promise.resolve(undefined)))
   .then((r) => (r && r.type === 'opaque' && req && req.mode === 'cors') ? undefined : r);
 
-const CACHE  = 'jiljo-v5.0.5';
+const CACHE  = 'jiljo-v5.0.6';
 const ORPHAN = ['jiljo-v1.0'];
 const ASSETS = [
   './', './index.html', './manifest.json',

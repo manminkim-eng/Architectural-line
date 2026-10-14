@@ -99,6 +99,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
   white-space:nowrap;flex-shrink:0;-webkit-tap-highlight-color:transparent;}
 .tb:hover{color:#fff;background:rgba(255,255,255,.09);}
 .tb.active{color:#fff;background:#15803d;border-bottom-color:#86efac;}
+.tb.tb-manual{margin-left:auto;text-decoration:none;white-space:nowrap;}   /* v5.0.6 — 사용자 매뉴얼(탭 막대 오른쪽 끝) */
 .tab-panel{display:none;width:100%;}
 .tab-panel.active{display:block;}
 /* v5.0-HDR — 요약 스트립 (헤더 3층) */
@@ -241,6 +242,8 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
   color:var(--text2);border-bottom:1px solid var(--border);text-align:left}
 .shadow-table td{padding:9px 14px;border-bottom:1px solid var(--border2);color:var(--text)}
 .shadow-table tr:last-child td{border-bottom:none}
+@media(max-width:480px){.shadow-table th,.shadow-table td{padding:8px 6px}}   /* v5.0.6 — 경계 방향 열 추가 후 390px 폭 유지 */
+.page>*{min-width:0}
 .shadow-table tr:hover td{background:rgba(0,194,168,.04)}
 .td-ok{color:var(--green);font-weight:700}
 .td-ng{color:var(--red);font-weight:700}
@@ -609,14 +612,15 @@ footer{border-top-color:#e4e9f0;background:#fff;} .foot-nm{color:#15803d;} .foot
       </div>
     </div>
     <div class="hdr-right-wrap">
-      <!-- v5.0-HDR — 4줄 · LawMCP 2026-09-03 확인(건축법 시행령 제86조 현행 2026-07-28 시행) -->
-      <div class="hdr-right"><strong>건축법 제61조 · 시행령 제86조</strong><br/>일조 등의 확보를 위한 건축물의 높이 제한<br/>정북 사선 · 공동주택 채광 · 동지 2시간<br/><em>[시행령 시행 2026. 7. 28.]</em></div>
+      <!-- v5.0-HDR — 4줄 · LawMCP 2026-10-14 확인(건축법 시행령 현행 2026-10-06 시행 · 제86조 최종 개정 2024-06-18) -->
+      <div class="hdr-right"><strong>건축법 제61조 · 시행령 제86조</strong><br/>일조 등의 확보를 위한 건축물의 높이 제한<br/>정북 사선 · 공동주택 채광 · 동 간 거리<br/><em>[시행령 시행 2026. 10. 6.]</em></div>
     </div>
   </div>
   <nav class="tab-bar">
     <div class="tab-bar-inner">
       <button class="tb active" onclick="goTab('main',this)">⌨️ 검토 입력·결과</button>
       <button class="tb" onclick="goTab('print',this)">📄 A4 계산서</button>
+      <a class="tb tb-manual" href="./manual/" target="_blank" rel="noopener" title="사용자 매뉴얼 (새 창)" onclick="if(navigator.onLine===false){event.preventDefault();showToast('매뉴얼은 인터넷 연결 시 열립니다');}">📘 매뉴얼</a>
     </div>
   </nav>
 </header>
@@ -628,7 +632,7 @@ footer{border-top-color:#e4e9f0;background:#fff;} .foot-nm{color:#15803d;} .foot
     <span class="sum-item">📏 기준 이격: <b id="sb-min">—</b></span>
     <span class="sum-item">📐 계획 이격: <b id="sb-dist">—</b></span>
     <span class="sum-item">⚖️ 판정: <b id="sb-verdict">—</b></span>
-    <span class="sum-item">☀️ 연속 일조: <b id="sb-sun">—</b></span>
+    <span class="sum-item">☀️ 연속 일조(참고): <b id="sb-sun">—</b></span>
   </div>
 </div>
 
@@ -665,7 +669,8 @@ footer{border-top-color:#e4e9f0;background:#fff;} .foot-nm{color:#15803d;} .foot
           </optgroup>
           <optgroup label="상업·공업지역">
             <option value="근린상업">근린상업지역</option>
-            <option value="기타상업">일반·중심·유통상업지역</option>
+            <option value="일반중심상업">일반·중심상업지역</option>
+            <option value="유통상업">유통상업지역</option>
             <option value="공업">공업지역</option>
           </optgroup>
           <optgroup label="기타">
@@ -712,7 +717,7 @@ footer{border-top-color:#e4e9f0;background:#fff;} .foot-nm{color:#15803d;} .foot
       <div id="apt-fields" style="display:none">
         <div class="divider"></div>
         <div class="note-box" style="margin-top:0;margin-bottom:14px">
-          <strong>공동주택 추가 정보</strong> — §86③ 채광창 방향 이격거리 기준 적용
+          <strong>공동주택 추가 정보</strong> — §86③ 1호 채광(용도지역별 2배 · 근린상업·준주거 4배) · 2호 가목 같은 대지 동 간 거리
         </div>
         <div class="fg">
           <div class="area3">
@@ -724,15 +729,15 @@ footer{border-top-color:#e4e9f0;background:#fff;} .foot-nm{color:#15803d;} .foot
             <div>
               <div class="slabel">마주보는 동 간격</div>
               <input class="mm-inp" type="number" id="betweenDist" min="0" max="500" step="0.1" placeholder="12.0">
-              <div class="iunit">m — 동 간 거리</div>
+              <div class="iunit">m — 같은 대지 두 동 사이 (없으면 비움)</div>
             </div>
             <div>
-              <div class="slabel">지역 유형</div>
+              <div class="slabel">주택 유형</div>
               <select class="mm-sel" id="aptZoneType">
-                <option value="일반">일반</option>
-                <option value="근준">근린상업·준주거</option>
+                <option value="일반">일반 공동주택</option>
                 <option value="도시형">도시형 생활주택</option>
               </select>
+              <div class="iunit">동 간 0.5배(도시형 0.25배)</div>
             </div>
           </div>
         </div>
@@ -741,19 +746,20 @@ footer{border-top-color:#e4e9f0;background:#fff;} .foot-nm{color:#15803d;} .foot
       <div class="divider"></div>
       <div class="area2">
         <div class="fg">
-          <div class="slabel">인접 도로 너비</div>
+          <div class="slabel">사이 시설·부지 너비</div>
           <input class="mm-inp" type="number" id="roadW" min="0" max="100" step="0.1" placeholder="0">
-          <div class="iunit">m — 정북 방향 (없으면 0)</div>
+          <div class="iunit">m — 대지와 정북 인접 대지 사이 (없으면 0)</div>
         </div>
         <div class="fg">
-          <div class="slabel">인접 공지·공원</div>
+          <div class="slabel">사이 시설·부지 (§86⑥)</div>
           <select class="mm-sel" id="openSpace">
             <option value="none">없음</option>
-            <option value="park">공원 접함</option>
-            <option value="road">도로 접함</option>
-            <option value="river">하천·철도 접함</option>
+            <option value="park">공원</option>
+            <option value="road">도로·광장·공공공지·녹지</option>
+            <option value="river">하천·철도·유수지</option>
+            <option value="vacant">건축 불가 공지·소규모 대지</option>
           </select>
-          <div class="iunit">§86⑥ 반대편 경계 적용</div>
+          <div class="iunit">반대편 경계선(공동주택은 중심선)을 인접 대지경계선으로</div>
         </div>
       </div>
 
@@ -761,8 +767,8 @@ footer{border-top-color:#e4e9f0;background:#fff;} .foot-nm{color:#15803d;} .foot
       <div class="divider"></div>
       <div class="slabel" style="margin-bottom:12px">적용 제외 특례 (§86②)</div>
       <div class="toggle-row">
-        <div><div class="toggle-lbl">지구단위계획·경관지구 + 20m 이상 도로</div>
-          <div class="toggle-sub">§86②1호 — 사선제한 미적용</div></div>
+        <div><div class="toggle-lbl">지구단위계획구역·경관지구·중점경관관리구역·특별가로구역·허가권자 지정 구역 + 너비 20m 이상 도로</div>
+            <div class="toggle-sub">§86②1호 가~라목 — 도로에는 자동차·보행자·자전거 전용도로와 접한 공공공지·녹지 등 포함</div></div>
         <label class="tog"><input type="checkbox" id="ex1"><span class="tog-sl"></span></label>
       </div>
       <div class="toggle-row">
@@ -811,14 +817,14 @@ footer{border-top-color:#e4e9f0;background:#fff;} .foot-nm{color:#15803d;} .foot
       </div>
       <div class="area2">
         <div class="fg">
-          <div class="slabel">건물 폭 (동서)</div>
+          <div class="slabel">건물 폭 (동서) · 참고</div>
           <input class="mm-inp" type="number" id="bldgW" min="1" max="200" step="0.5" placeholder="10.0">
-          <div class="iunit">m — 일영 계산용</div>
+          <div class="iunit">m — 계산서 기록용(일영 계산 미사용)</div>
         </div>
         <div class="fg">
-          <div class="slabel">건물 방위각</div>
+          <div class="slabel">경계선 방위각</div>
           <input class="mm-inp" type="number" id="azimuth" min="-90" max="90" step="1" placeholder="0">
-          <div class="iunit">° 정북기준 (동:+, 서:-)</div>
+          <div class="iunit">° 경계선에 수직인 방향 — 정북 0 (동:+, 서:−)</div>
         </div>
       </div>
     </div>
@@ -838,7 +844,8 @@ footer{border-top-color:#e4e9f0;background:#fff;} .foot-nm{color:#15803d;} .foot
         </div>
         <div class="info-bd">
           <p>전용·일반주거지역에서 건축물 각 부분을 <strong>정북 방향 인접 대지경계선</strong>으로부터 일정 거리 이상 떨어지게 해야 합니다 (§86①).</p>
-          <div class="formula">▸ 높이 10m 이하 부분 → 1.5m 이상<br>▸ 높이 10m 초과 부분 → 해당 높이 × 1/2 이상</div>
+          <div class="formula">▸ 높이 10m 이하 부분 → 1.5m 이상<br>▸ 높이 10m 초과 부분 → 해당 높이 × 1/2 이상<br>▸ 위 범위에서 건축조례로 정하는 거리 이상 — 1.5m · 1/2은 최소값</div>
+          <p style="font-size:11px;margin-top:8px">※ 건축법 제61조① 개정(2026. 8. 11. 공포, 2026. 11. 12. 시행) — 10m 초과 17m 이하 부분 5m 이상 · 17m 초과 부분 높이의 1/2 이상으로 법에서 직접 정함. 시행령 제86조①(10m 초과 부분 1/2)은 아직 개정 전(2027. 4. 7. 시행 개정본도 같음) — 이 계산기는 현행 시행령 기준</p>
         </div>
       </div>
       <div class="info-item">
@@ -848,7 +855,7 @@ footer{border-top-color:#e4e9f0;background:#fff;} .foot-nm{color:#15803d;} .foot
         </div>
         <div class="info-bd">
           <p>동지(12/22) 기준 태양 고도각으로 그림자 길이를 계산합니다.</p>
-          <div class="formula">▸ 태양 고도(h) = arcsin(sinφ·sinδ + cosφ·cosδ·cosH)<br>▸ 그림자 길이 = 건물높이 / tan(h)<br>▸ 법정 기준: 동지 09~15시 연속 2시간 이상 일조</div>
+          <div class="formula">▸ 태양 고도(h) = arcsin(sinφ·sinδ + cosφ·cosδ·cosH)<br>▸ 그림자 길이 L = 건물높이 / tan(h)<br>▸ 경계선 방향 성분 = −L × cos(태양 방위각 − 경계선 방위각) ≥ 경계까지 거리 → 그림자<br>▸ 참고: 동지 09~15시 연속 2시간은 §86③2호 단서 — 같은 대지 두 동 사이 거리를 2시간 일조 거리로 할 수 있다는 완화 규정</div>
         </div>
       </div>
       <div class="info-item">
@@ -858,7 +865,7 @@ footer{border-top-color:#e4e9f0;background:#fff;} .foot-nm{color:#15803d;} .foot
         </div>
         <div class="info-bd">
           <ul>
-            <li>지구단위계획구역·경관지구 내 <strong>20m 이상 도로</strong> 접한 경우</li>
+            <li>지구단위계획구역·경관지구·중점경관관리구역·특별가로구역·허가권자 지정 구역 안 대지 상호간으로 <strong>너비 20m 이상 도로</strong>에 접한 경우(1호)</li>
             <li>건축협정구역 내 대지 상호간</li>
             <li>정북 방향 인접지가 <strong>비주거지역</strong>인 경우</li>
           </ul>
@@ -893,7 +900,7 @@ footer{border-top-color:#e4e9f0;background:#fff;} .foot-nm{color:#15803d;} .foot
           <table class="shadow-table">
             <thead><tr>
               <th>시각</th><th>태양고도(°)</th><th>방위각(°)</th>
-              <th>그림자(m)</th><th>일조</th>
+              <th>그림자(m)</th><th>경계 방향(m)</th><th>일조</th>
             </tr></thead>
             <tbody id="shadow-tbody"></tbody>
           </table>
@@ -945,7 +952,7 @@ footer{border-top-color:#e4e9f0;background:#fff;} .foot-nm{color:#15803d;} .foot
   <div class="foot-inner">
     <div>
       <div class="foot-nm">MANMIN Ver-5.0</div>
-      <div class="foot-desc">일조권·사선제한 계산기 | 건축법 제61조 · 시행령 제86조 [시행 2026. 7. 28.]</div>
+      <div class="foot-desc">일조권·사선제한 계산기 | 건축법 제61조 · 시행령 제86조 [시행 2026. 10. 6.]</div>
     </div>
     <div class="foot-copy">ARCHITECT KIM MANMIN © 2026</div>
   </div>
@@ -983,7 +990,7 @@ footer{border-top-color:#e4e9f0;background:#fff;} .foot-nm{color:#15803d;} .foot
         <div class="help-step"><div class="step-no">2</div><div class="step-txt"><strong>건물 높이, 측정 부분 높이, 경계선까지의 거리</strong>를 m 단위로 입력하세요.</div></div>
         <div class="help-step"><div class="step-no">3</div><div class="step-txt">공동주택은 <strong>채광창 방향 이격거리</strong>와 동 간 거리를 추가 입력합니다.</div></div>
         <div class="help-step"><div class="step-no">4</div><div class="step-txt"><strong>적용 제외 특례</strong> 해당 여부를 확인하고 토글을 켜세요.</div></div>
-        <div class="help-step"><div class="step-no">5</div><div class="step-txt"><strong>대지 위도</strong>를 선택하고 건물 방위각(정북 기준 동:+, 서:-)을 입력합니다.</div></div>
+        <div class="help-step"><div class="step-no">5</div><div class="step-txt"><strong>대지 위도</strong>를 선택하고 정북 경계선의 방위각(경계선에 수직인 방향, 정북 0 · 동:+, 서:−)을 입력합니다.</div></div>
         <div class="help-step"><div class="step-no">6</div><div class="step-txt"><strong>[일조권 검토 실행]</strong>을 클릭하면 사선제한 여부·최소 이격거리·동지 일영시간이 자동 산출됩니다.</div></div>
         <div class="mtip"><strong>⚠️ 유의사항:</strong> 본 계산기는 건축법 시행령 제86조 표준 기준입니다. 지자체 건축조례에 따라 이격거리가 달라질 수 있으므로 실제 인허가 시 허가권자에 반드시 확인하세요.</div>
       </div>
@@ -993,24 +1000,27 @@ footer{border-top-color:#e4e9f0;background:#fff;} .foot-nm{color:#15803d;} .foot
           <div class="msec-title">건축법 시행령 제86조① (정북 사선제한)</div>
           <div class="mitem"><div class="mitem-t">높이 10m 이하 부분</div><div class="mitem-d">인접 대지경계선으로부터 <strong style="color:#15803d">1.5m 이상</strong> 이격</div></div>
           <div class="mitem"><div class="mitem-t">높이 10m 초과 부분</div><div class="mitem-d">인접 대지경계선으로부터 해당 높이의 <strong style="color:#15803d">1/2 이상</strong> 이격</div></div>
+          <div class="mitem"><div class="mitem-t">조례</div><div class="mitem-d">위 범위에서 <strong style="color:#15803d">건축조례로 정하는 거리 이상</strong> — 1.5m · 1/2은 최소값</div></div>
+          <div class="mitem"><div class="mitem-t">법 개정 예정</div><div class="mitem-d">건축법 제61조① 개정(2026. 8. 11. 공포, 2026. 11. 12. 시행) — 10m 초과 17m 이하 부분 5m 이상 · 17m 초과 부분 높이의 1/2 이상으로 법에서 직접 정함. 시행령 제86조①(10m 초과 부분 1/2)은 아직 개정 전(2027. 4. 7. 시행 개정본도 같음) — 이 계산기는 현행 시행령 기준</div></div>
         </div>
         <div class="msec">
           <div class="msec-title">제86조③ (공동주택 채광 이격)</div>
           <div class="mitem"><div class="mitem-t">채광창 직각 방향</div><div class="mitem-d">경계선까지 수평거리의 <strong style="color:#15803d">2배</strong> 이하 (근린상업·준주거: <strong style="color:#15803d">4배</strong>)</div></div>
-          <div class="mitem"><div class="mitem-t">동지 연속 일조</div><div class="mitem-d">동지 09:00~15:00 사이 <strong style="color:#15803d">연속 2시간 이상</strong> 일조 확보</div></div>
+          <div class="mitem"><div class="mitem-t">동 간 거리 (2호 가목)</div><div class="mitem-d">같은 대지 두 동이 마주보면 채광창 벽면에서 높이의 <strong style="color:#15803d">0.5배</strong>(도시형 생활주택 0.25배) 이상 범위에서 조례로 정하는 거리</div></div>
+          <div class="mitem"><div class="mitem-t">2시간 일조 (2호 단서)</div><div class="mitem-d">모든 세대가 동지 09~15시 연속 2시간 이상 일조를 확보하는 거리 이상으로 <strong style="color:#15803d">할 수 있음</strong>(완화)</div></div>
         </div>
         <div class="msec">
           <div class="msec-title">제86조⑥ (공지 인접 시)</div>
           <div class="mitem"><div class="mitem-t">공원·도로·하천·철도·광장 인접</div><div class="mitem-d">반대편 대지경계선(공동주택: 중심선)을 인접 대지경계선으로 적용</div></div>
         </div>
-        <div class="mtip"><strong>이행강제금 유의!</strong> 일조 높이제한 위반 시 이행강제금 부과 (§115조의2④)</div>
+        <div class="mtip"><strong>이행강제금 유의!</strong> 일조 높이제한 위반 등 시정명령 불이행 시 이행강제금 부과 (건축법 제80조)</div>
       </div>
 
       <div class="m-panel" id="mt-dispute">
         <div class="help-step"><div class="step-no">⚡</div><div class="step-txt"><strong>설계 초기 단계</strong>에 일조 검토를 시행하면 인허가 지적 사항을 사전 차단할 수 있습니다.</div></div>
         <div class="help-step"><div class="step-no">📋</div><div class="step-txt">인접 토지 소유자와의 분쟁 예방을 위해 <strong>일조권 확인서</strong>를 작성해 설계 단계에 공유하세요.</div></div>
         <div class="help-step"><div class="step-no">🗺️</div><div class="step-txt">정북 방향 측량이 불확실한 경우 <strong>현황측량</strong>으로 실제 경계선 위치를 확인하세요.</div></div>
-        <div class="help-step"><div class="step-no">🏛️</div><div class="step-txt">분쟁 발생 시 <strong>건축분쟁전문위원회</strong>(시·도 설치)에 조정 신청할 수 있습니다 (건축법 §88).</div></div>
+        <div class="help-step"><div class="step-no">🏛️</div><div class="step-txt">분쟁 발생 시 <strong>건축분쟁전문위원회</strong>(국토교통부 설치)에 조정 신청할 수 있습니다 (건축법 제88조①).</div></div>
         <div class="help-step"><div class="step-no">📊</div><div class="step-txt">일영 등시선도를 허가 도서에 첨부하면 분쟁 예방에 효과적입니다.</div></div>
         <div class="mtip"><strong>설계 초기 체크리스트:</strong><br>① 용도지역 확인 → ② 사선제한 이격거리 계산 → ③ 동지 일영시간 확인 → ④ 인접 대지 현황 파악 → ⑤ 허가권자 사전 상담</div>
       </div>
@@ -1018,7 +1028,7 @@ footer{border-top-color:#e4e9f0;background:#fff;} .foot-nm{color:#15803d;} .foot
       <div class="m-panel" id="mt-links">
         <a class="ref-link" href="https://www.law.go.kr/lsSc.do?query=건축법+시행령" target="_blank" rel="noopener">
           <span class="ref-link-ico">⚖️</span>
-          <div class="ref-link-body"><div class="rl">국가법령정보센터 — 건축법 시행령</div><div class="rs">법제처 공식 법령 원문 — 제86조 [시행 2026. 7. 28.]</div></div>
+          <div class="ref-link-body"><div class="rl">국가법령정보센터 — 건축법 시행령</div><div class="rs">법제처 공식 법령 원문 — 제86조 [시행 2026. 10. 6.]</div></div>
         </a>
         <a class="ref-link" href="https://www.molit.go.kr" target="_blank" rel="noopener">
           <span class="ref-link-ico">🏗️</span>
@@ -1043,7 +1053,7 @@ footer{border-top-color:#e4e9f0;background:#fff;} .foot-nm{color:#15803d;} .foot
 <script>
 /* ═══════════════════════════════════════════════
    MANMIN Ver-5.0 — 일조권·사선제한 계산기 (v1.0 계산 로직 원문 · 무변경)
-   건축법 제61조 · 시행령 제86조 [시행 2026. 7. 28.]
+   건축법 제61조 · 시행령 제86조 [시행 2026. 10. 6.]
 ═══════════════════════════════════════════════ */
 
 /* ── 전역 계산 결과 저장 ── */
@@ -1059,8 +1069,12 @@ function onZoneChange(){
     '일반1종':'✅ 제1종 일반주거지역 — §86① 정북 사선제한 적용 대상',
     '일반2종':'✅ 제2종 일반주거지역 — §86① 정북 사선제한 적용 대상',
     '일반3종':'✅ 제3종 일반주거지역 — §86① 정북 사선제한 적용 대상',
-    '준주거':'ℹ️ 준주거지역 — 정북 사선제한 미적용. 공동주택 채광 이격(§86③)은 적용',
-    '근린상업':'ℹ️ 근린상업지역 — 사선제한 미적용. 공동주택 채광거리 ×4배 기준 적용',
+    '준주거':'ℹ️ 준주거지역 — 정북 사선제한 미적용. 공동주택 채광 높이 = 이격거리 ×4배 이하(§86③1호)',
+    '근린상업':'ℹ️ 근린상업지역 — 정북 사선제한 미적용. 공동주택 채광 높이 = 이격거리 ×4배 이하(§86③1호)',
+    '일반중심상업':'ℹ️ 일반·중심상업지역 — 정북 사선제한 미적용. 공동주택 채광 기준도 적용 제외(법 제61조②)',
+    '유통상업':'ℹ️ 유통상업지역 — 정북 사선제한 미적용. 공동주택 채광 높이 = 이격거리 ×2배 이하(§86③1호)',
+    '공업':'ℹ️ 공업지역 — 정북 사선제한 미적용. 공동주택 채광 높이 = 이격거리 ×2배 이하(§86③1호)',
+    '농림':'ℹ️ 농림·자연환경보전·관리지역 — 정북 사선제한 미적용. 공동주택 채광 높이 = 이격거리 ×2배 이하(§86③1호)',
   };
   if(msgs[z]){ n.style.display='block'; n.innerHTML=msgs[z]; }
   else if(z){ n.style.display='block'; n.innerHTML='ℹ️ '+z+' — 일조 사선제한 적용 제외 지역'; }
@@ -1109,51 +1123,53 @@ function minDist(partH){
   return partH <= 10 ? 1.5 : partH / 2;
 }
 
-/* ── 일영 계산 ── */
-function calcShadow(bldgH, distBound, latDeg, dayOfYear){
+/* ── 일영 계산 ── v5.0.6 정정: 그림자 전체 길이 대신 경계선 방향 성분으로 비교 (A4) · 경계선 방위각 반영 (B3)
+   그림자 끝은 태양 반대 방향(방위각 az+180°)으로 L = H/tan(고도) 만큼 생긴다.
+   경계선에 수직인 방향(방위각 θ, 정북 0)으로의 성분 d = −L·cos(az − θ). d ≥ 경계까지 거리이면 경계를 넘는 그림자. */
+function calcShadow(bldgH, distBound, latDeg, dayOfYear, bndAz){
   const rows = [];
+  const th = (bndAz||0);
   let shadowH09_15 = 0, cont = 0, maxCont = 0;
-
+  const at = (tf) => {
+    const solar = getSolar(dayOfYear, (tf-12)*15, latDeg);
+    const up = solar.alt > 1.0;
+    const sLen = up ? bldgH / Math.tan(solar.alt*Math.PI/180) : 9999;
+    const proj = up ? -sLen * Math.cos((solar.az - th)*Math.PI/180) : 0;
+    const inShadow = up && proj >= distBound;
+    return {solar, up, sLen, proj, inShadow};
+  };
   for(let h=6; h<=18; h++){
     for(let m=0; m<60; m+=30){
       const tf = h + m/60;
-      // 마지막 18:00 포함 처리
       if(tf > 18) break;
-      const solar = getSolar(dayOfYear, (tf-12)*15, latDeg);
-      const altRad = solar.alt * Math.PI/180;
-      // 고도 1° 이상일 때만 유효 그림자 계산 (tan 불안정 방지)
-      const sLen = solar.alt > 1.0 ? bldgH / Math.tan(altRad) : 9999;
-      const inShadow = (sLen >= distBound) && (solar.alt > 1.0);
+      const r = at(tf);
       const inWin = (tf >= 9 && tf <= 15);
-      if(inShadow && inWin) shadowH09_15 += 0.5;
+      if(r.inShadow && inWin) shadowH09_15 += 0.5;
       rows.push({
         time: String(h).padStart(2,'0')+':'+String(m).padStart(2,'0'),
-        alt: solar.alt.toFixed(1),
-        az: solar.az.toFixed(1),
-        shadow: solar.alt > 1.0 ? sLen.toFixed(1) : '∞',
-        inShadow, inWin
+        alt: r.solar.alt.toFixed(1),
+        az: r.solar.az.toFixed(1),
+        shadow: r.up ? r.sLen.toFixed(1) : '∞',
+        proj: r.up ? r.proj.toFixed(1) : '—',
+        inShadow: r.inShadow, sun: r.up && !r.inShadow, inWin
       });
     }
   }
-
-  // 연속 일조 시간 계산 (그림자 없는 연속 구간)
-  cont = 0; maxCont = 0;
+  // 연속 일조 시간 (09~15시, 30분 간격 표본) — 참고 지표
   for(let tf=9; tf<=15; tf+=0.5){
-    const solar = getSolar(dayOfYear, (tf-12)*15, latDeg);
-    const altRad = solar.alt * Math.PI/180;
-    const sLen = solar.alt > 1.0 ? bldgH / Math.tan(altRad) : 9999;
-    // 그림자가 경계선에 닿지 않으면 → 일조
-    if(sLen < distBound && solar.alt > 1.0){
-      cont += 0.5;
-      if(cont > maxCont) maxCont = cont;
-    } else {
-      cont = 0; // 연속 끊김
-    }
+    const r = at(tf);
+    if(r.up && !r.inShadow){ cont += 0.5; if(cont > maxCont) maxCont = cont; }
+    else cont = 0;
   }
   return { rows, shadowH09_15, continuousSun: maxCont };
 }
 
-/* ── 메인 계산 ── */
+/* ── 메인 계산 ── v5.0.6 정정
+   · 정북 사선(§86①): 전용·일반주거지역 · 특례(§86②) 아님 · ⑥ 사이 시설·부지가 있으면 반대편 경계선(공동주택은 중심선)
+   · 공동주택 채광(§86③1호): 일반·중심상업지역 제외(법 제61조②) · 근린상업·준주거 4배, 그 밖 2배
+   · 동 간 거리(§86③2호 가목): 같은 대지 두 동 — 높이 0.5배(도시형 생활주택 0.25배) 이상
+   · 동지 연속 2시간(§86③2호 단서)은 동 간 거리 완화 규정이므로 판정에 넣지 않고 참고로 표시 */
+const CH_FAC = z => (z==='근린상업' || z==='준주거') ? 4 : 2;
 function calculate(){
   const zone = document.getElementById('zone').value;
   const bldgType = document.getElementById('bldgType').value;
@@ -1163,6 +1179,9 @@ function calculate(){
   const refDay = document.querySelector('input[name="refDay"]:checked').value;
   const bldgW = parseFloat(document.getElementById('bldgW').value)||10;
   const azimuth = parseFloat(document.getElementById('azimuth').value)||0;
+  const roadW = parseFloat(document.getElementById('roadW').value)||0;
+  const openSpace = document.getElementById('openSpace').value;
+  const htype = document.getElementById('aptZoneType').value;
   const lat = getLat();
   const doy = getDOY(refDay);
   const ex1 = document.getElementById('ex1').checked;
@@ -1176,32 +1195,40 @@ function calculate(){
   if(partH > bldgH){ showToast('❗ 측정 높이가 건물 높이를 초과할 수 없습니다'); return; }
   if(isNaN(distBound)||distBound<0){ showToast('❗ 경계선까지 거리를 입력하세요'); return; }
 
+  const isApt = bldgType === '공동';
   const isResidential = ['전용1종','전용2종','일반1종','일반2종','일반3종'].includes(zone);
   const isExempt = ex1||ex2||ex3;
   const saseonApply = isResidential && !isExempt;
+  const sixApply = openSpace !== 'none' && roadW > 0;
+  const effDist = distBound + (sixApply ? (isApt ? roadW/2 : roadW) : 0);
   const mDist = minDist(partH);
-  const saseonOk = !saseonApply || (distBound >= mDist);
+  const saseonOk = !saseonApply || (effDist >= mDist - 1e-9);
 
-  // 공동주택
-  let aptOk = true, aptMsg = '';
-  if(bldgType === '공동'){
+  // 공동주택 — 채광(1호) · 동 간(2호 가목)
+  const aptApply = isApt && zone !== '일반중심상업';
+  let light = {apply:false}, gap = {apply:false};
+  if(aptApply){
     const ld = parseFloat(document.getElementById('lightDist').value)||0;
-    const az = document.getElementById('aptZoneType').value;
-    if(ld > 0){
-      const lim = ld * (az==='근준' ? 4 : 2);
-      aptOk = bldgH <= lim;
-      aptMsg = `채광창 이격 ${ld}m × ${az==='근준'?4:2} = 한도 ${lim}m, 현재 ${bldgH}m → ${aptOk?'✅':'❌'}`;
-    }
+    if(ld > 0){ const fac = CH_FAC(zone), lim = ld*fac; light = {apply:true, ld, fac, lim, ok: bldgH <= lim + 1e-9}; }
+    const bd = parseFloat(document.getElementById('betweenDist').value)||0;
+    if(bd > 0){ const gf = htype==='도시형' ? 0.25 : 0.5, req = bldgH*gf; gap = {apply:true, bd, gf, req, ok: bd >= req - 1e-9}; }
   }
+  const aptOk = (!light.apply || light.ok) && (!gap.apply || gap.ok);
+  const msgs = [];
+  if(light.apply) msgs.push(`채광: 이격 ${light.ld}m × ${light.fac} = 한도 ${+light.lim.toFixed(2)}m, 현재 ${bldgH}m → ${light.ok?'✅':'❌'}`);
+  if(gap.apply) msgs.push(`동 간: 높이 ${bldgH}m × ${gap.gf} = ${+gap.req.toFixed(2)}m 이상, 현재 ${gap.bd}m → ${gap.ok?'✅':'❌'}`);
+  if(isApt && !aptApply) msgs.push('일반·중심상업지역 — 공동주택 채광 기준 적용 제외(법 제61조②)');
+  const aptMsg = msgs.join(' | ');
 
-  const shadowData = calcShadow(bldgH, distBound, lat, doy);
-  const sunOk = shadowData.continuousSun >= 2;
-  if(bldgType==='공동' && !sunOk){ aptOk=false; aptMsg+=(aptMsg?' | ':'')+'동지 연속 일조 '+shadowData.continuousSun.toFixed(1)+'h (2h 미달)'; }
+  const shadowData = calcShadow(bldgH, distBound + (sixApply ? roadW : 0), lat, doy, azimuth);
+  const anyApply = saseonApply || light.apply || gap.apply;
+  const allOk = saseonOk && aptOk;
 
   _lastResult = {
     zone, bldgType, bldgH, partH, distBound, mDist, saseonApply, saseonOk,
     aptOk, aptMsg, shadowData, isExempt, ex1, ex2, ex3, lat, refDay,
-    bldgW, azimuth, doy
+    bldgW, azimuth, doy, roadW, openSpace, sixApply, effDist, htype,
+    aptApply, light, gap, anyApply, allOk
   };
 
   renderResult(_lastResult);
@@ -1217,15 +1244,20 @@ function renderResult(d){
   /* 판정 */
   const vb = document.getElementById('verdict-box');
   let vc,vi,vt,vs;
-  if(!d.saseonApply){
-    vc='v-warn'; vi='ℹ️'; vt='사선제한 미적용 구역';
-    vs='선택된 용도지역 또는 특례 적용으로 정북 사선제한이 적용되지 않습니다.';
-  } else if(d.saseonOk && d.aptOk){
-    vc='v-ok'; vi='✅'; vt='일조권 기준 적합';
-    vs='현재 계획안이 건축법 시행령 제86조 일조 사선제한 기준을 충족합니다.';
+  const items = [], fails = [];
+  if(d.saseonApply){ items.push('정북 사선(①)'); if(!d.saseonOk) fails.push('정북 사선(①)'); }
+  if(d.light.apply){ items.push('채광(③1호)'); if(!d.light.ok) fails.push('채광(③1호)'); }
+  if(d.gap.apply){ items.push('동 간 거리(③2호 가목)'); if(!d.gap.ok) fails.push('동 간 거리(③2호 가목)'); }
+  const naNote = d.saseonApply ? '' : ' 정북 사선제한은 '+(d.isExempt?'특례(②)로':'용도지역상')+' 적용되지 않습니다.';
+  if(!d.anyApply){
+    vc='v-warn'; vi='ℹ️'; vt='검토 대상 기준 없음';
+    vs=(d.isExempt?'특례(제86조②) 적용으로':'선택한 용도지역에서는')+' 정북 사선제한이 적용되지 않고, 공동주택 채광·동 간 기준도 '+(d.bldgType==='공동'?(d.aptApply?'입력값이 없어 검토하지 않았습니다.':'적용 제외(법 제61조②)입니다.'):'해당하지 않습니다.');
+  } else if(d.allOk){
+    vc='v-ok'; vi='✅'; vt='일조 기준 적합';
+    vs='건축법 시행령 제86조 '+items.join(' · ')+' 기준을 충족합니다.'+naNote;
   } else {
-    vc='v-ng'; vi='❌'; vt='일조권 기준 위반';
-    vs='건축법 시행령 제86조 기준에 미달하였습니다. 설계 변경이 필요합니다.';
+    vc='v-ng'; vi='❌'; vt='일조 기준 위반';
+    vs='건축법 시행령 제86조 '+fails.join(' · ')+' 기준에 미달합니다. 설계 변경이 필요합니다.'+naNote;
   }
   vb.className = 'card fi verdict-box '+vc;
   vb.innerHTML = `<div class="v-ico">${vi}</div><div class="v-body"><div class="vt">${vt}</div><div class="vs">${vs}</div></div>`;
@@ -1238,38 +1270,38 @@ function renderResult(d){
     <div class="metric-card">
       <div class="ml">최소 이격(기준)</div>
       <div class="mv">${d.saseonApply?d.mDist.toFixed(1):'—'}</div>
-      <div class="mu">m (§86① 계산값)</div>
+      <div class="mu">m (§86① 최소값 · 조례 확인)</div>
       ${d.saseonApply?j(d.saseonOk,'✅ 적합','❌ 위반'):'<span class="mj mj-na">미적용</span>'}
     </div>
     <div class="metric-card">
       <div class="ml">계획 이격거리</div>
-      <div class="mv">${d.distBound.toFixed(1)}</div>
-      <div class="mu">m (입력값)</div>
+      <div class="mv">${d.effDist.toFixed(1)}</div>
+      <div class="mu">${d.sixApply?'m (⑥ '+(d.bldgType==='공동'?'중심선':'반대편 경계')+' · 입력 '+d.distBound+'m)':'m (입력값)'}</div>
       ${d.saseonApply?j(d.saseonOk,'기준 이상','기준 미달'):'<span class="mj mj-na">참고</span>'}
     </div>
     <div class="metric-card">
-      <div class="ml">동지 일영(09~15)</div>
+      <div class="ml">${d.refDay==='winter'?'동지':d.refDay==='summer'?'하지':'춘추분'} 일영(09~15)</div>
       <div class="mv">${d.shadowData.shadowH09_15.toFixed(1)}</div>
-      <div class="mu">시간 (그림자)</div>
-      ${d.shadowData.shadowH09_15>4?j(false,'','과다 일영'):d.shadowData.shadowH09_15>2?'<span class="mj" style="background:rgba(232,160,32,.15);color:var(--gold)">⚠️ 주의</span>':j(true,'✅ 양호','')}
+      <div class="mu">시간 (경계 넘는 그림자 · ${d.lat.toFixed(2)}°N)</div>
+      <span class="mj mj-na">참고</span>
     </div>
     <div class="metric-card">
-      <div class="ml">연속 일조(동지)</div>
+      <div class="ml">연속 일조(09~15)</div>
       <div class="mv">${d.shadowData.continuousSun.toFixed(1)}</div>
       <div class="mu">시간 (연속 햇빛)</div>
-      ${j(d.shadowData.continuousSun>=2,'✅ 2h 확보','❌ 2h 미달')}
+      <span class="mj mj-na">${d.bldgType==='공동'?'참고 · ③2호 단서':'참고'}</span>
     </div>
     <div class="metric-card">
       <div class="ml">공동주택 채광</div>
-      <div class="mv">${d.bldgType==='공동'?d.bldgH.toFixed(1)+'m':'N/A'}</div>
-      <div class="mu">${d.bldgType==='공동'?'건물 높이':'비해당'}</div>
-      ${d.bldgType==='공동'?j(d.aptOk,'✅ 적합','❌ 위반'):jNA}
+      <div class="mv">${d.light.apply?d.bldgH.toFixed(1)+'m':'—'}</div>
+      <div class="mu">${d.light.apply?'높이 ≤ '+(+d.light.lim.toFixed(2))+'m (×'+d.light.fac+')':d.bldgType!=='공동'?'비해당':!d.aptApply?'적용 제외(법 §61②)':'채광창 이격 미입력'}</div>
+      ${d.light.apply?j(d.light.ok,'✅ 적합','❌ 위반'):jNA}
     </div>
     <div class="metric-card">
-      <div class="ml">분석 위도</div>
-      <div class="mv">${d.lat.toFixed(2)}</div>
-      <div class="mu">°N (${d.refDay==='winter'?'동지':d.refDay==='summer'?'하지':'춘추분'})</div>
-      <span class="mj mj-na">참고</span>
+      <div class="ml">동 간 거리</div>
+      <div class="mv">${d.gap.apply?d.gap.bd.toFixed(1)+'m':'—'}</div>
+      <div class="mu">${d.gap.apply?'≥ '+(+d.gap.req.toFixed(2))+'m (높이 ×'+d.gap.gf+')':d.bldgType!=='공동'?'비해당':!d.aptApply?'적용 제외(법 §61②)':'동 간격 미입력'}</div>
+      ${d.gap.apply?j(d.gap.ok,'✅ 적합','❌ 위반'):jNA}
     </div>`;
 
   /* 다이어그램 */
@@ -1278,8 +1310,8 @@ function renderResult(d){
   /* 일영 테이블 */
   document.getElementById('shadow-tbody').innerHTML = d.shadowData.rows.map(r=>
     `<tr><td class="td-mono">${r.time}</td><td class="td-mono">${r.alt}°</td>
-    <td class="td-mono">${r.az}°</td><td class="td-mono">${r.shadow}m</td>
-    <td class="${r.inShadow?(r.inWin?'td-ng':''):r.inWin?'td-ok':''}">${r.inShadow?'🌑 그림자':'☀️ 일조'}</td></tr>`
+    <td class="td-mono">${r.az}°</td><td class="td-mono">${r.shadow}m</td><td class="td-mono">${r.proj}${r.proj==='—'?'':'m'}</td>
+    <td class="${r.inShadow?(r.inWin?'td-ng':''):r.inWin&&r.sun?'td-ok':''}">${r.inShadow?'🌑 그림자':r.sun?'☀️ 일조':'🌙 일몰'}</td></tr>`
   ).join('');
 
   /* 분석 바 */
@@ -1288,14 +1320,14 @@ function renderResult(d){
   document.getElementById('shadow-analysis').innerHTML=`
     <div style="margin-bottom:16px">
       <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-        <span style="font-size:12px;font-weight:700;color:var(--text2)">연속 일조 시간 (동지 09~15)</span>
+        <span style="font-size:12px;font-weight:700;color:var(--text2)">연속 일조 시간 (09~15 · 참고)</span>
         <span style="font-family:var(--font-mono);color:var(--teal)">${d.shadowData.continuousSun.toFixed(1)}h / 6h</span>
       </div>
       <div class="prog-bar"><div class="prog-fill" style="width:${sunPct}%;background:${sunPct>=33?'var(--green)':'var(--red)'}"></div></div>
     </div>
     <div>
       <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-        <span style="font-size:12px;font-weight:700;color:var(--text2)">동지 일영 시간 (09~15)</span>
+        <span style="font-size:12px;font-weight:700;color:var(--text2)">일영 시간 (09~15 · 참고)</span>
         <span style="font-family:var(--font-mono);color:var(--gold)">${d.shadowData.shadowH09_15.toFixed(1)}h / 6h</span>
       </div>
       <div class="prog-bar"><div class="prog-fill" style="width:${shPct}%;background:var(--gold)"></div></div>
@@ -1305,16 +1337,19 @@ function renderResult(d){
   /* 법령 근거 */
   let lawTxt = '';
   if(d.saseonApply){
-    lawTxt = `<strong>§86①</strong> 적용 — 높이 ${d.partH}m ${d.partH<=10?'(10m 이하) → 최소 1.5m':'(10m 초과) → 높이의 1/2 = '+d.mDist.toFixed(1)+'m'} 이격 필요. `;
-    lawTxt += d.saseonOk ? `현재 ${d.distBound}m → <strong style="color:var(--green)">적합</strong>.` :
-      `현재 ${d.distBound}m → <strong style="color:var(--red)">${(d.mDist-d.distBound).toFixed(1)}m 추가 이격 필요</strong>.`;
+    lawTxt = `<strong>§86①</strong> 적용 — 높이 ${d.partH}m ${d.partH<=10?'(10m 이하) → 최소 1.5m':'(10m 초과) → 높이의 1/2 = '+d.mDist.toFixed(1)+'m'} 이상(건축조례로 정하는 거리 확인). `;
+    if(d.sixApply) lawTxt += `<strong>§86⑥</strong> 사이 시설·부지 ${d.roadW}m — ${d.bldgType==='공동'?'중심선':'반대편 경계선'}을 인접 대지경계선으로 → 이격 ${d.effDist.toFixed(2)}m. `;
+    lawTxt += d.saseonOk ? `계획 ${d.effDist.toFixed(2)}m → <strong style="color:var(--green)">적합</strong>.` :
+      `계획 ${d.effDist.toFixed(2)}m → <strong style="color:var(--red)">${(d.mDist-d.effDist).toFixed(2)}m 추가 이격 필요</strong>.`;
   } else {
-    lawTxt = d.isExempt ? '<strong>§86②</strong> 특례 적용 — ' : `${d.zone} 지역은 §86① 적용 제외 — `;
-    if(d.ex1) lawTxt += '지구단위계획·경관지구 내 20m 도로 접함. ';
-    if(d.ex2) lawTxt += '정북 방향 인접지 비주거지역. ';
-    if(d.ex3) lawTxt += '건축협정구역 내 상호간. ';
+    lawTxt = d.isExempt ? '<strong>§86②</strong> 특례 적용 — ' : `${d.zone} 지역은 §86① 적용 제외(전용·일반주거지역만 적용). `;
+    if(d.ex1) lawTxt += '지구단위계획구역 등(1호 가~라목) 안 너비 20m 이상 도로 접함. ';
+    if(d.ex2) lawTxt += '정북 방향 인접지 비주거지역(3호). ';
+    if(d.ex3) lawTxt += '건축협정구역 안 대지 상호간(2호). ';
   }
-  lawTxt += `<br><br>동지 연속 일조: <strong>${d.shadowData.continuousSun.toFixed(1)}시간</strong> 확보. 법정 최소(공동주택): <strong>2시간 이상</strong>.`;
+  if(d.aptMsg) lawTxt += `<br><br><strong>§86③</strong> ${d.aptMsg}`;
+  lawTxt += `<br><br>연속 일조 ${d.shadowData.continuousSun.toFixed(1)}시간(참고) — 동지 09~15시 연속 2시간은 §86③2호 단서의 동 간 거리 완화 규정입니다.`;
+  lawTxt += '<br><span style="font-size:11px;opacity:.8">※ 건축법 제61조① 개정(2026. 8. 11. 공포, 2026. 11. 12. 시행) — 10m 초과 17m 이하 부분 5m 이상 · 17m 초과 부분 높이의 1/2 이상으로 법에서 직접 정함. 시행령 제86조①(10m 초과 부분 1/2)은 아직 개정 전(2027. 4. 7. 시행 개정본도 같음) — 이 계산기는 현행 시행령 기준</span>';
   document.getElementById('law-basis').innerHTML = `<div class="law-tag">⚖️ 적용 법령 근거 — MANMIN Ver-5.0</div><div class="law-text">${lawTxt}</div>`;
 
   rp.scrollIntoView({behavior:'smooth', block:'start'});
@@ -1347,7 +1382,8 @@ function drawDiagram(d){
   const bldgX  = W * 0.58;
   // 스케일: 건물 높이가 화면(H-70)에 맞고, 이격거리가 bldgX의 60%에 맞도록
   const maxRefH  = Math.max(d.bldgH, 1);
-  const maxRefD  = Math.max(d.distBound, d.mDist || 1, 1);
+  const dEff = (d.effDist!=null ? d.effDist : d.distBound);
+  const maxRefD  = Math.max(dEff, d.mDist || 1, 1);
   const scaleH   = (H - 70) / maxRefH;
   const scaleD   = (bldgX * 0.85) / maxRefD;
   const scale    = Math.min(scaleH, scaleD, 18); // 최대 18px/m 제한
@@ -1360,7 +1396,7 @@ function drawDiagram(d){
   ctx.beginPath(); ctx.moveTo(0, ground); ctx.lineTo(W, ground); ctx.stroke();
 
   // 경계선 (빨강 점선)
-  const boundX = bldgX - d.distBound * scale;
+  const boundX = bldgX - dEff * scale;
   ctx.strokeStyle = 'rgba(255,78,78,.55)';
   ctx.setLineDash([6,4]); ctx.lineWidth = 1.5;
   ctx.beginPath(); ctx.moveTo(boundX, 0); ctx.lineTo(boundX, ground); ctx.stroke();
@@ -1416,7 +1452,7 @@ function drawDiagram(d){
     ctx.beginPath(); ctx.moveTo(boundX, ground + 15); ctx.lineTo(bldgX, ground + 15); ctx.stroke();
     ctx.fillStyle = 'rgba(0,194,168,.9)';
     ctx.font = 'bold 10px "DM Mono",monospace'; ctx.textAlign = 'center';
-    ctx.fillText(d.distBound + 'm', boundX + (bldgX - boundX) / 2, ground + 27);
+    ctx.fillText((+dEff.toFixed(2)) + 'm', boundX + (bldgX - boundX) / 2, ground + 27);
   }
 
   // 판정 표시 (좌상단)
@@ -1424,14 +1460,14 @@ function drawDiagram(d){
   ctx.fillStyle = d.saseonApply ? (d.saseonOk ? 'rgba(0,200,150,.95)' : 'rgba(255,78,78,.95)') : 'rgba(232,160,32,.9)';
   ctx.font = 'bold 12px "Noto Sans KR",sans-serif';
   ctx.fillText(
-    d.saseonApply ? (d.saseonOk ? '✅ 적합' : '❌ 위반') : 'ℹ️ 미적용',
+    d.saseonApply ? (d.saseonOk ? '✅ 정북 사선 적합' : '❌ 정북 사선 위반') : 'ℹ️ 정북 사선 미적용',
     10, 18
   );
 
   // 경계선 라벨
   ctx.fillStyle = 'rgba(255,78,78,.85)';
   ctx.font = 'bold 9px sans-serif';
-  ctx.fillText('경계선', Math.max(2, boundX + 3), 32);
+  ctx.fillText(d.sixApply?'경계선(⑥)':'경계선', Math.max(2, boundX + 3), 32);
 
   ctx.textAlign = 'left';
 }
@@ -1802,7 +1838,7 @@ function buildA4Doc(){
   const vCls= na?'na':ok?'ok':'ng';
   const vIco= na?'ℹ️':ok?'✅':'❌';
   const vTxt= na?'사선제한 미적용 구역':ok?'기준 적합 — §86조 충족':'기준 위반 — §86조 미달';
-  const vSub= na?'선택 용도지역 또는 특례 적용':'건축법 시행령 제86조 (2026.02.27 개정)';
+  const vSub= na?'선택 용도지역 또는 특례 적용':'건축법 시행령 제86조 (최종 개정 2024. 6. 18.)';
   const dj  = d.saseonApply?(d.saseonOk?'ok':'ng'):'';
   const sj  = d.shadowData.continuousSun>=2?'ok':'ng';
   const djL = d.saseonApply?(d.saseonOk?'✅ 적합':'❌ 위반'):'';
@@ -1812,7 +1848,7 @@ function buildA4Doc(){
 
   return `
 <div class="a4-doc-title">일조권·사선제한 검토 계산서</div>
-<div class="a4-doc-sub">건축법 시행령 제86조 (2026.02.27 개정) · MANMIN Ver-5.0</div>
+<div class="a4-doc-sub">건축법 시행령 제86조 (최종 개정 2024. 6. 18.) · MANMIN Ver-5.0</div>
 
 <div class="a4-info-grid">
   <div class="a4-info-cell"><div class="a4-info-lbl">용도지역</div><div class="a4-info-val">${d.zone||'—'}</div></div>
@@ -2151,7 +2187,7 @@ window.scaleA4Paper=function(){ if(window._scaleA4) window._scaleA4(); };
 
 window.goTab=function(id,btn){
   document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
-  document.querySelectorAll('.tb').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('.tb:not(.tb-manual)').forEach(function(b){ b.classList.remove('active'); });
   var panel=document.getElementById('tab-'+id); if(panel) panel.classList.add('active');
   if(!btn){ document.querySelectorAll('.tb').forEach(function(b){ if((b.getAttribute('onclick')||'').indexOf("'"+id+"'")>=0) b.classList.add('active'); }); }
   else btn.classList.add('active');
@@ -2185,37 +2221,49 @@ window.renderA4=function(){
   set('a4-projName', pn||'—'); set('a4-projAuthor', au||'—'); set('a4-projDate', _today()); set('a4-foot-date', _today());
   var body=$('a4-body'); if(!body) return;
   if(!d){ body.innerHTML='<div style="color:#94a3b8;font-size:11px;padding:10px;">「검토 입력·결과」 탭에서 먼저 일조권 검토를 실행하세요.</div>'; return; }
-  var ok=d.saseonOk&&d.aptOk, na=!d.saseonApply;
+  var ok=d.allOk, na=!d.anyApply;
   var vCls=na?'na':ok?'ok':'ng';
-  var vTxt=na?'정북 사선제한 미적용 구역':ok?'일조권 기준 적합':'일조권 기준 위반';
-  var vSub=na?'선택 용도지역 또는 특례(제86조 제2항) 적용 — 사선제한 검토 대상 아님':ok?'건축법 시행령 제86조 제1항·제3항 기준 충족':'건축법 시행령 제86조 기준 미달 — 설계 변경 필요';
+  var it=[], fl=[];
+  if(d.saseonApply){ it.push('제1항'); if(!d.saseonOk) fl.push('제1항(정북 사선)'); }
+  if(d.light.apply){ it.push('제3항 제1호'); if(!d.light.ok) fl.push('제3항 제1호(채광)'); }
+  if(d.gap.apply){ it.push('제3항 제2호 가목'); if(!d.gap.ok) fl.push('제3항 제2호 가목(동 간)'); }
+  var vTxt=na?'검토 대상 기준 없음':ok?'일조 기준 적합':'일조 기준 위반';
+  var vSub=na?'정북 사선제한 미적용(용도지역 또는 제86조 제2항 특례) · 공동주택 채광 · 동 간 기준 해당 없음':ok?'건축법 시행령 제86조 '+it.join(' · ')+' 기준 충족'+(d.saseonApply?'':' — 정북 사선제한은 미적용'):'건축법 시행령 제86조 '+fl.join(' · ')+' 기준 미달 — 설계 변경 필요';
   var refName={winter:'동지 (12/22)',summer:'하지 (6/21)',equinox:'춘·추분'}[d.refDay]||d.refDay;
-  var sunOk=d.shadowData.continuousSun>=2;
-  var exList=[d.ex1?'지구단위계획·경관지구 + 20m 이상 도로(제2항 제1호)':null, d.ex2?'정북 인접지 비주거지역(제2항 제3호)':null, d.ex3?'건축협정구역 내 상호간(제2항 제2호)':null].filter(Boolean);
+  var exList=[d.ex1?'지구단위계획구역 등 + 너비 20m 이상 도로(제2항 제1호)':null, d.ex2?'정북 인접지 비주거지역(제2항 제3호)':null, d.ex3?'건축협정구역 내 상호간(제2항 제2호)':null].filter(Boolean);
   var h='';
   h+='<div class="a4-sub">1. 검토 조건</div><table class="a4-meta-table"><tbody>'
     +'<tr><td class="k">용도지역</td><td>'+_esc(d.zone)+'</td><td class="k">건축물 유형</td><td>'+_esc({단독:'단독·다가구주택',공동:'공동주택',비주거:'비주거용 건축물'}[d.bldgType]||d.bldgType)+'</td></tr>'
     +'<tr><td class="k">건물 높이</td><td class="mono">'+d.bldgH+' m</td><td class="k">검토 부분 높이</td><td class="mono">'+d.partH+' m</td></tr>'
-    +'<tr><td class="k">계획 이격거리</td><td class="mono">'+d.distBound+' m (정북 인접 대지경계선)</td><td class="k">건물 폭 · 방위각</td><td class="mono">'+d.bldgW+' m · '+d.azimuth+'°</td></tr>'
+    +'<tr><td class="k">계획 이격거리</td><td class="mono">'+d.distBound+' m (정북 인접 대지경계선)</td><td class="k">경계선 방위각 · 건물 폭</td><td class="mono">'+d.azimuth+'° · '+d.bldgW+' m(참고)</td></tr>'
+    +'<tr><td class="k">사이 시설·부지 (제6항)</td><td>'+(d.sixApply?_esc({park:'공원',road:'도로·광장·공공공지·녹지',river:'하천·철도·유수지',vacant:'건축 불가 공지·소규모 대지'}[d.openSpace]||d.openSpace)+' '+d.roadW+' m → '+(d.bldgType==='공동'?'중심선':'반대편 경계선')+' 기준 '+(+d.effDist.toFixed(2))+' m':'해당 없음')+'</td><td class="k">주택 유형</td><td>'+(d.bldgType==='공동'?(d.htype==='도시형'?'도시형 생활주택':'일반 공동주택'):'—')+'</td></tr>'
     +'<tr><td class="k">분석 위도 · 기준일</td><td class="mono">'+d.lat.toFixed(2)+'°N · '+_esc(refName)+'</td><td class="k">제86조 제2항 특례</td><td>'+(exList.length?_esc(exList.join(' · ')):'해당 없음')+'</td></tr>'
     +'</tbody></table>';
   h+='<div class="a4-sub">2. 판정 결과</div>'
     +'<div class="a4-verdict '+vCls+'"><div style="font-size:22px;line-height:1">'+(na?'ℹ️':ok?'✅':'⚠️')+'</div><div><div class="v-main">'+vTxt+'</div><div class="v-sub">'+vSub+'</div></div></div>';
-  h+='<div class="a4-sub">3. 정북 사선제한 검토 (시행령 제86조 제1항)</div><table class="a4-tbl"><thead><tr><th style="width:30%">항목</th><th>기준</th><th>계획값</th><th style="width:14%">판정</th></tr></thead><tbody>'
-    +'<tr><td>최소 이격거리</td><td class="r">'+(d.saseonApply?d.mDist.toFixed(2)+' m ('+(d.partH<=10?'높이 10m 이하 → 1.5m':'높이 10m 초과 → 높이의 1/2')+')':'미적용')+'</td><td class="r">'+d.distBound+' m</td><td class="c"><span class="a4-tag '+(d.saseonApply?(d.saseonOk?'ok':'ng'):'na')+'">'+(d.saseonApply?(d.saseonOk?'적합':'위반'):'미적용')+'</span></td></tr>';
-  if(d.bldgType==='공동'){ h+='<tr><td>공동주택 채광 이격 (제3항 제1호)</td><td colspan="2">'+_esc(d.aptMsg||'채광창 이격거리 미입력 — 검토 생략')+'</td><td class="c"><span class="a4-tag '+(d.aptOk?'ok':'ng')+'">'+(d.aptOk?'적합':'위반')+'</span></td></tr>'; }
+  h+='<div class="a4-sub">3. 높이 제한 검토 (시행령 제86조 제1항 · 제3항)</div><table class="a4-tbl"><thead><tr><th style="width:30%">항목</th><th>기준</th><th>계획값</th><th style="width:14%">판정</th></tr></thead><tbody>'
+    +'<tr><td>정북 사선 최소 이격 (제1항)</td><td class="r">'+(d.saseonApply?d.mDist.toFixed(2)+' m 이상 ('+(d.partH<=10?'높이 10m 이하 → 1.5m':'높이 10m 초과 → 높이의 1/2')+' · 조례 확인)':'미적용')+'</td><td class="r">'+(+d.effDist.toFixed(2))+' m</td><td class="c"><span class="a4-tag '+(d.saseonApply?(d.saseonOk?'ok':'ng'):'na')+'">'+(d.saseonApply?(d.saseonOk?'적합':'위반'):'미적용')+'</span></td></tr>';
+  if(d.bldgType==='공동'){
+    if(!d.aptApply){ h+='<tr><td>공동주택 채광 · 동 간 (제3항)</td><td colspan="2">일반·중심상업지역 — 적용 제외(법 제61조 제2항)</td><td class="c"><span class="a4-tag na">제외</span></td></tr>'; }
+    else {
+      h+='<tr><td>채광 높이 (제3항 제1호)</td><td class="r">'+(d.light.apply?'이격 '+d.light.ld+' m × '+d.light.fac+' = '+(+d.light.lim.toFixed(2))+' m 이하':'채광창 이격 미입력')+'</td><td class="r">'+d.bldgH+' m</td><td class="c"><span class="a4-tag '+(d.light.apply?(d.light.ok?'ok':'ng'):'na')+'">'+(d.light.apply?(d.light.ok?'적합':'위반'):'생략')+'</span></td></tr>';
+      h+='<tr><td>동 간 거리 (제3항 제2호 가목)</td><td class="r">'+(d.gap.apply?'높이 '+d.bldgH+' m × '+d.gap.gf+' = '+(+d.gap.req.toFixed(2))+' m 이상':'동 간격 미입력')+'</td><td class="r">'+(d.gap.apply?d.gap.bd+' m':'—')+'</td><td class="c"><span class="a4-tag '+(d.gap.apply?(d.gap.ok?'ok':'ng'):'na')+'">'+(d.gap.apply?(d.gap.ok?'적합':'위반'):'생략')+'</span></td></tr>';
+    }
+  }
   h+='</tbody></table>';
-  h+='<div class="a4-sub">4. 일조 시간 분석 ('+_esc(refName)+' · 09~15시)</div><table class="a4-tbl"><thead><tr><th style="width:30%">항목</th><th>기준</th><th>분석값</th><th style="width:14%">판정</th></tr></thead><tbody>'
-    +'<tr><td>연속 일조 시간</td><td class="c">2시간 이상 (제3항 제2호 단서)</td><td class="r">'+d.shadowData.continuousSun.toFixed(2)+' h</td><td class="c"><span class="a4-tag '+(sunOk?'ok':'ng')+'">'+(sunOk?'2h 확보':'2h 미달')+'</span></td></tr>'
+  h+='<div class="a4-sub">4. 일조 시간 분석 ('+_esc(refName)+' · 09~15시 · 참고)</div><table class="a4-tbl"><thead><tr><th style="width:30%">항목</th><th>기준</th><th>분석값</th><th style="width:14%">판정</th></tr></thead><tbody>'
+    +'<tr><td>연속 일조 시간</td><td class="c">참고 — 제3항 제2호 단서(동 간 거리 완화: 동지 09~15시 연속 2시간)</td><td class="r">'+d.shadowData.continuousSun.toFixed(2)+' h</td><td class="c"><span class="a4-tag info">참고</span></td></tr>'
     +'<tr><td>09~15시 일영 시간</td><td class="c">참고</td><td class="r">'+d.shadowData.shadowH09_15.toFixed(2)+' h</td><td class="c"><span class="a4-tag info">참고</span></td></tr>'
     +'</tbody></table>';
-  h+='<table class="a4-tbl shadow"><thead><tr><th>시각</th><th>태양고도(°)</th><th>방위각(°)</th><th>그림자 길이(m)</th><th>일조</th></tr></thead><tbody>'
-    +d.shadowData.rows.map(function(r){ return '<tr><td class="c mono">'+_esc(r.time)+'</td><td class="r">'+_esc(r.alt)+'</td><td class="r">'+_esc(r.az)+'</td><td class="r">'+_esc(r.shadow)+'</td><td class="c">'+(r.inShadow?'그림자':'일조')+'</td></tr>'; }).join('')
+  h+='<table class="a4-tbl shadow"><thead><tr><th>시각</th><th>태양고도(°)</th><th>방위각(°)</th><th>그림자 길이(m)</th><th>경계 방향(m)</th><th>일조</th></tr></thead><tbody>'
+    +d.shadowData.rows.map(function(r){ return '<tr><td class="c mono">'+_esc(r.time)+'</td><td class="r">'+_esc(r.alt)+'</td><td class="r">'+_esc(r.az)+'</td><td class="r">'+_esc(r.shadow)+'</td><td class="r">'+_esc(r.proj)+'</td><td class="c">'+(r.inShadow?'그림자':r.sun?'일조':'일몰')+'</td></tr>'; }).join('')
     +'</tbody></table>';
   h+='<div class="a4-sub">5. 적용 기준</div><table class="a4-meta-table"><tbody>'
     +'<tr><td class="k">건축법 제61조</td><td>일조 등의 확보를 위한 건축물의 높이 제한 — 전용·일반주거지역 정북 방향 이격 [법률 시행 2026. 2. 27.]</td></tr>'
-    +'<tr><td class="k">시행령 제86조 ①</td><td>높이 10m 이하 부분 1.5m 이상 · 10m 초과 부분 높이의 1/2 이상 (건축조례로 정하는 거리) [시행 2026. 7. 28.]</td></tr>'
-    +'<tr><td class="k">시행령 제86조 ②·③</td><td>②항 특례(20m 이상 도로·건축협정구역·인접대지 비주거지역) · ③항 공동주택 채광 이격 2배(근린상업·준주거 4배) · 동지 09~15시 2시간 연속 일조</td></tr>'
+    +'<tr><td class="k">시행령 제86조 ①</td><td>높이 10m 이하 부분 1.5m 이상 · 10m 초과 부분 높이의 1/2 이상의 범위에서 건축조례로 정하는 거리 이상 [시행 2026. 10. 6. · 제86조 최종 개정 2024. 6. 18.]</td></tr>'
+    +'<tr><td class="k">시행령 제86조 ②·⑥</td><td>②항 특례 — 1호 지구단위계획구역 등(가~라목) 안 너비 20m 이상 도로 · 2호 건축협정구역 · 3호 정북 인접대지 비주거지역 / ⑥항 사이 시설·부지가 있으면 반대편 대지경계선(공동주택은 중심선)</td></tr>'
+    +'<tr><td class="k">시행령 제86조 ③</td><td>1호 채광 높이 — 이격거리의 2배(근린상업·준주거 4배) 이하, 일반·중심상업지역 제외(법 제61조 제2항) · 2호 가목 동 간 거리 — 높이의 0.5배(도시형 생활주택 0.25배) 이상, 단서: 동지 09~15시 연속 2시간 일조 거리로 할 수 있음</td></tr>'
+    +'<tr><td class="k">법 개정 예정</td><td>건축법 제61조① 개정(2026. 8. 11. 공포, 2026. 11. 12. 시행) — 10m 초과 17m 이하 부분 5m 이상 · 17m 초과 부분 높이의 1/2 이상으로 법에서 직접 정함. 시행령 제86조①(10m 초과 부분 1/2)은 아직 개정 전(2027. 4. 7. 시행 개정본도 같음) — 이 계산기는 현행 시행령 기준</td></tr>'
     +'<tr><td class="k">검토 범위</td><td>표준 산식 검토 자료 — 지자체 건축조례·지구단위계획 등 별도 기준은 허가권자 확인 필요. 일영은 분석 위도·배치에 따라 달라질 수 있음</td></tr>'
     +'</tbody></table>';
   body.innerHTML=h;
@@ -2245,10 +2293,10 @@ window.mmSetSum=function(){
   var d=(typeof _lastResult!=='undefined')?_lastResult:null;
   var f=function(id,v,cls){ var e=document.getElementById(id); if(e){ e.textContent=v; e.className=cls||''; } };
   if(!d){ ['sb-zone','sb-h','sb-min','sb-dist','sb-verdict','sb-sun'].forEach(function(id){ f(id,'—'); }); return; }
-  var ok=d.saseonOk&&d.aptOk, na=!d.saseonApply;
-  f('sb-zone', d.zone); f('sb-h', d.bldgH+' m'); f('sb-min', d.saseonApply?d.mDist.toFixed(1)+' m':'미적용', d.saseonApply?'':'na'); f('sb-dist', d.distBound+' m');
-  f('sb-verdict', na?'미적용':ok?'적합':'위반', na?'na':ok?'':'ng');
-  f('sb-sun', d.shadowData.continuousSun.toFixed(1)+' h', d.shadowData.continuousSun>=2?'':'ng');
+  var ok=d.allOk, na=!d.anyApply;
+  f('sb-zone', d.zone); f('sb-h', d.bldgH+' m'); f('sb-min', d.saseonApply?d.mDist.toFixed(1)+' m':'미적용', d.saseonApply?'':'na'); f('sb-dist', (+d.effDist.toFixed(2))+' m');
+  f('sb-verdict', na?'대상 없음':ok?'적합':'위반', na?'na':ok?'':'ng');
+  f('sb-sun', d.shadowData.continuousSun.toFixed(1)+' h');
 };
 (function(){ var _c=window.calculate; if(typeof _c==='function'){ window.calculate=function(){ var r=_c.apply(this,arguments); mmSetSum(); renderA4(); return r; }; } mmSetSum(); renderA4(); })();
 </script>
