@@ -1144,7 +1144,7 @@ function calcShadow(bldgH, distBound, latDeg, dayOfYear, bndAz){
       if(tf > 18) break;
       const r = at(tf);
       const inWin = (tf >= 9 && tf <= 15);
-      if(r.inShadow && inWin) shadowH09_15 += 0.5;
+      if(r.inShadow && tf >= 9 && tf < 15) shadowH09_15 += 0.5;   // v5.0.6 — 30분 구간(시작 시각 표본) 12개 · 최대 6 h
       rows.push({
         time: String(h).padStart(2,'0')+':'+String(m).padStart(2,'0'),
         alt: r.solar.alt.toFixed(1),
@@ -1155,8 +1155,8 @@ function calcShadow(bldgH, distBound, latDeg, dayOfYear, bndAz){
       });
     }
   }
-  // 연속 일조 시간 (09~15시, 30분 간격 표본) — 참고 지표
-  for(let tf=9; tf<=15; tf+=0.5){
+  // 연속 일조 시간 (09~15시, 30분 구간 12개 — 구간 시작 시각 표본) — 참고 지표 · 최대 6 h (v5.0.6 정정: 기존 13개 표본 → 최대 6.5 h)
+  for(let tf=9; tf<15; tf+=0.5){
     const r = at(tf);
     if(r.up && !r.inShadow){ cont += 0.5; if(cont > maxCont) maxCont = cont; }
     else cont = 0;
