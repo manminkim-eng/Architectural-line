@@ -938,7 +938,7 @@ footer{border-top-color:#e4e9f0;background:#fff;} .foot-nm{color:#15803d;} .foot
     <div id="a4-body"><div style="color:#94a3b8;font-size:11px;padding:10px;">「검토 입력·결과」 탭에서 먼저 일조권 검토를 실행하세요.</div></div>
     <div class="a4-footer">
       <span>일조권·사선제한 계산기 [MANMIN-Ver5.0]</span>
-      <span>건축법 시행령 제86조 · 동지 기준 일영 분석</span>
+      <span id="a4-foot-ref">건축법 시행령 제86조 · 동지 (12/22) 기준 일영 분석(참고)</span>
       <span>작성일: <span id="a4-foot-date">—</span></span>
     </div>
   </div><!-- /a4-page -->
@@ -1416,7 +1416,11 @@ function drawDiagram(d){
     ctx.fillStyle = 'rgba(232,160,32,.9)';
     ctx.font = 'bold 10px "DM Mono",monospace';
     ctx.textAlign = 'left';
-    ctx.fillText('사선제한', Math.max(4, sasX - 2), Math.max(14, ground - partDrawH - 8));
+    // v5.0.6 — 「경계선」 라벨(x=boundX+3, y=32)과 겹칠 때만 한 줄 아래(y=46)로
+    const sasLX = Math.max(4, sasX - 2), bndLX = Math.max(2, boundX + 3);
+    let sasLY = Math.max(14, ground - partDrawH - 8);
+    if(Math.abs(sasLX - bndLX) < 60 && Math.abs(sasLY - 32) < 14) sasLY = 46;
+    ctx.fillText('사선제한', sasLX, sasLY);
   }
 
   // 건물 (패딩 있는 사각형)
@@ -2219,6 +2223,7 @@ window.renderA4=function(){
   var set=function(id,v){ var e=$(id); if(e) e.textContent=v; };
   var pn=($('a4ProjName')||{}).value||'', au=($('a4Author')||{}).value||'';
   set('a4-projName', pn||'—'); set('a4-projAuthor', au||'—'); set('a4-projDate', _today()); set('a4-foot-date', _today());
+  set('a4-foot-ref', '건축법 시행령 제86조 · '+(d?({winter:'동지 (12/22)',summer:'하지 (6/21)',equinox:'춘·추분'}[d.refDay]||d.refDay):'동지 (12/22)')+' 기준 일영 분석(참고)');   // v5.0.6 — 기준일 연동
   var body=$('a4-body'); if(!body) return;
   if(!d){ body.innerHTML='<div style="color:#94a3b8;font-size:11px;padding:10px;">「검토 입력·결과」 탭에서 먼저 일조권 검토를 실행하세요.</div>'; return; }
   var ok=d.allOk, na=!d.anyApply;
