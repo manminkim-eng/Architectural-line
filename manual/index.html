@@ -4,10 +4,10 @@
 <title>일조권·사선제한 계산기 사용자 매뉴얼 Ver-5.0 · MANMIN</title>
 <meta name="description" content="일조권·사선제한 계산기 MANMIN Ver-5.0 사용자 매뉴얼 — 화면 기능, 건축법 제61조 · 시행령 제86조 해설, 실무 작업 방법">
 <meta name="author" content="김만민 건축사 · ㈜대성건축사사무소">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&family=Orbitron:wght@700;900&display=swap">
+<meta name="theme-color" content="#15803d"><meta name="color-scheme" content="light dark">
 <link rel="stylesheet" href="./assets/fonts/manmin-fonts.css">
-<style>
+<style>:root{--mh-a:#052e16;--mh-b:#15803d;--mh-c:#16a34a;--mh-accent:#86efac;--mh-shadow:rgba(21,128,61,.35);--mh-btn-ink:#15803d;--mh-veil:0.25;--mh-bp:50%}
+
 :root{
   --navy:#2D3A8C;--navy-d:#1F2A6B;--navy-l:#E9ECF8;--accent:#F4A261;--accent-d:#C97A3A;--accent-l:#FDF1E7;
   --bg:#F8F9FA;--card:#FFFFFF;--text:#1A1A2E;--text2:#4A4F66;--line:#DDE1EA;--ok:#0F766E;--ng:#B42318;
@@ -21,15 +21,25 @@ code,kbd,.mono{font-family:var(--font-mono);font-size:.9em}
 code{background:var(--navy-l);color:var(--navy-d);padding:1px 6px;border-radius:5px}
 kbd{border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 6px;background:#fff}
 /* 상단 */
-.top{background:linear-gradient(135deg,var(--navy-d),var(--navy));color:#fff}
-.top-in{max-width:1240px;margin:0 auto;padding:44px 24px 36px}
-.eyebrow{font-family:var(--font-brand);font-weight:700;font-size:12px;letter-spacing:.18em;opacity:.85}
+.top{position:relative;background:linear-gradient(135deg,var(--mh-a),var(--mh-b) var(--mh-bp),var(--mh-c));color:#fff;box-shadow:0 2px 20px var(--mh-shadow)}
+.top::before{content:"";position:absolute;inset:0;background:rgba(0,0,0,var(--mh-veil));pointer-events:none}
+.top-in{position:relative;max-width:1240px;margin:0 auto;display:flex;justify-content:space-between;align-items:flex-end;gap:32px;flex-wrap:wrap;padding:40px 24px 32px}
+.eyebrow{font-family:var(--font-brand);font-weight:700;font-size:12px;letter-spacing:.18em;color:var(--mh-accent)}
 .top h1{font-size:28px;font-weight:900;margin:8px 0 6px;line-height:1.35}
 .top .sub{opacity:.9;margin:0}
-.badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
-.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:4px 12px;font-size:13px}
-a.badge{color:#fff;text-decoration:none}a.badge:hover{background:rgba(255,255,255,.24);color:#fff}
-.badge.acc{background:var(--accent);border-color:var(--accent);color:#1A1A2E;font-weight:700}
+.mh-main{flex:1 1 640px;min-width:0}
+.mh-eb{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.mh-ver{font:700 11px var(--font-brand);background:var(--mh-accent);color:#1A1A2E;border-radius:999px;padding:1px 10px}
+.mh-meta{margin:12px 0 0;font-size:13px;color:rgba(255,255,255,.9)}
+.mh-act{display:flex;gap:10px;flex-wrap:wrap}
+.mh-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:10px;font-size:15px;text-decoration:none}
+.mh-btn.pri{background:#fff;color:var(--mh-btn-ink);font-weight:700}
+.mh-btn.sec{border:1px solid rgba(255,255,255,.45);color:#fff}
+.mh-btn.pri:hover{background:var(--mh-accent);color:#1A1A2E}.mh-btn.sec:hover{background:rgba(255,255,255,.12);color:#fff}
+.mh-btn:focus-visible{outline:3px solid var(--mh-accent);outline-offset:2px}
+.mh-prog{position:fixed;top:0;left:0;right:0;height:3px;z-index:50;pointer-events:none}
+.mh-prog i{display:block;height:100%;width:0;background:var(--mh-accent)}
+.toc-sum{display:none}
 /* 레이아웃 */
 .wrap{max-width:1240px;margin:0 auto;padding:28px 24px 80px;display:grid;grid-template-columns:260px minmax(0,1fr);gap:32px}
 nav.toc{position:sticky;top:16px;align-self:start;max-height:calc(100vh - 32px);overflow:auto;background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:18px 16px;font-size:14px}
@@ -100,6 +110,21 @@ footer.foot{max-width:1240px;margin:0 auto;padding:0 24px 40px;color:var(--text2
 @media (max-width:640px){nav.toc ol{columns:1}body{font-size:15px}}
 @media (max-width:480px){.wrap,.top-in{padding-left:16px;padding-right:16px}.pin{width:22px;height:22px;font-size:11px;line-height:22px}}
 @media (max-width:400px){section.ch>h2{font-size:20px}}
+/* v-mh1 D4 접이식 목차 · D9 터치 44px (≤1024px) */
+@media (max-width:1024px){
+  nav.toc{padding:0 16px}
+  nav.toc .toc-sum{display:flex;align-items:center;justify-content:space-between;min-height:48px;font-weight:700;font-size:14px;color:var(--navy);cursor:pointer;list-style:none}
+  nav.toc .toc-sum::-webkit-details-marker{display:none}
+  nav.toc details:not([open]) ol,nav.toc details:not([open]) h2{display:none}
+  nav.toc details[open]{padding-bottom:12px}
+  nav.toc li a{display:flex;align-items:center;min-height:44px;padding:0 8px}
+}
+/* v-mh1 D5 좁은 화면 헤드 */
+@media (max-width:640px){
+  .top-in{padding:28px 16px 24px;gap:16px}.top h1{font-size:22px}.top .sub{font-size:13px}.mh-meta{font-size:12px}
+  .mh-act{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}.mh-btn{padding:0 8px;font-size:14px}
+}
+@media (max-width:480px){.eyebrow{letter-spacing:.04em}.mh-eb{gap:8px}}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 /* A4 인쇄 */
 @page{size:A4;margin:14mm 12mm 14mm}
@@ -113,7 +138,9 @@ footer.foot{max-width:1240px;margin:0 auto;padding:0 24px 40px;color:var(--text2
   section.ch:first-of-type{break-before:auto}
   figure.shot,.tbl,.eq,.svgbox,.note,.tip,.warn,.steps>li{break-inside:avoid}
   h3,h4{break-after:avoid}
-  .top{border-radius:0}
+  .top{border-radius:0;box-shadow:none}
+  .mh-prog,.mh-act{display:none!important}
+  .mh-meta{color:#fff}
   .pfoot{position:fixed;bottom:0;left:0;right:0;height:6mm;background:#fff;font-size:8pt;color:#666;border-top:1px solid #ccc;padding-top:1.5mm;display:flex;justify-content:space-between}
 }
 .pfoot{display:none}
@@ -147,15 +174,39 @@ footer.foot{max-width:1240px;margin:0 auto;padding:0 24px 40px;color:var(--text2
 }
 .rev{white-space:nowrap}
 @media print{.rev{display:none}}
+/* v-mh1 D6 다크 모드(화면 전용 · 헤드 색 불변 · 그림과 흐름도는 흰 바탕 유지) */
+@media screen and (prefers-color-scheme:dark){
+  :root{--bg:#0F1420;--card:#171D2C;--text:#E6E8EF;--text2:#A9AFC3;--line:#2A3245;--navy-l:#232B45;--accent-l:#33281D;--shadow:0 4px 20px rgba(0,0,0,.35)}
+  a,section.ch>h2,h3,.steps>li>b.t,.card h5,nav.toc li a.on,nav.toc .toc-sum{color:#AEB8F5}
+  a:hover{color:#F4A261}
+  code{background:var(--navy-l);color:#C9D0FA}
+  kbd{background:var(--card);color:var(--text)}
+  table,.card,nav.toc,section.ch{background:var(--card)}
+  th{background:var(--navy-l);color:#C9D0FA}
+  .note{border-left-color:#7F8CE0}
+  .warn{background:#3A1F22}
+  .ok{color:#5EEAD4}.ng{color:#FDA29B}
+  figure.shot .frame,.svgbox{background:#fff;border-color:var(--line)}
+  .tbl.stack tr{background:var(--card)}
+  .tbl.stack td:first-child{color:#C9D0FA}
+  .tbl:not(.stack){background:var(--card)}
+}
+@media screen and (prefers-color-scheme:dark) and (max-width:640px){
+  .tbl:not(.stack){background:linear-gradient(to right,var(--card) 30%,rgba(23,29,44,0)) left/40px 100% no-repeat local,linear-gradient(to left,var(--card) 30%,rgba(23,29,44,0)) right/40px 100% no-repeat local,radial-gradient(farthest-side at 100% 50%,rgba(0,0,0,.5),transparent) right/12px 100% no-repeat scroll,var(--card)}
+}
 </style>
 </head><body>
+<div class="mh-prog" aria-hidden="true"><i></i></div>
 <header class="top"><div class="top-in">
-<div class="eyebrow">MANMIN ENGINEERING · USER MANUAL</div>
+<div class="mh-main">
+<div class="mh-eb"><span class="eyebrow">MANMIN ENGINEERING · USER MANUAL</span><span class="mh-ver">Ver-5.0</span></div>
 <h1>일조권·사선제한 계산기 사용자 매뉴얼</h1>
 <p class="sub">용도지역 · 높이 · 거리 → 정북 사선 · 공동주택 채광 · 동 간 거리 → 일영(참고) → A4 검토 계산서</p>
-<div class="badges"><span class="badge acc">매뉴얼 <span style="font-family:var(--font-brand)">Ver-5.0</span></span><a class="badge" href="../index.html">▶ 일조권·사선제한 계산기 열기</a><a class="badge" href="일조사선_사용자매뉴얼_Ver-5.0.pdf" download>⤓ PDF</a><span class="badge">2026-10-14</span><span class="badge">김만민 건축사 · ㈜대성건축사사무소</span></div>
+<p class="mh-meta">2026-10-14 · 김만민 건축사 · ㈜대성건축사사무소 · 건축법 제61조 · 시행령 제86조</p>
+</div>
+<div class="mh-act"><a class="mh-btn pri" href="../index.html" aria-label="일조권·사선제한 계산기 열기">▶ 계산서 열기</a><a class="mh-btn sec" href="일조사선_사용자매뉴얼_Ver-5.0.pdf" download>⤓ PDF (A4)</a></div>
 </div></header>
-<div class="wrap"><nav class="toc" aria-label="목차"><h2>목차</h2><ol><li><a href="#ch0">0. 이 매뉴얼에 대하여</a></li><li><a href="#ch1">1. 한눈에 보기</a></li><li class="sub"><a href="#s1-1">화면 구성</a></li><li class="sub"><a href="#s1-2">작업 탭·근거 표시</a></li><li class="sub"><a href="#s1-3">설치·보관·매뉴얼</a></li><li><a href="#ch2">2. 1분 따라하기</a></li><li><a href="#ch3">3. 화면별 기능 상세</a></li><li class="sub"><a href="#s3-1">① 공사 정보·용도지역</a></li><li class="sub"><a href="#s3-2">② 대지 및 건물 정보</a></li><li class="sub"><a href="#s3-3">③ 일영 분석 설정</a></li><li class="sub"><a href="#s3-4">종합 판정·검토 지표</a></li><li class="sub"><a href="#s3-5">단면도</a></li><li class="sub"><a href="#s3-6">시간대별 일영 분석</a></li><li class="sub"><a href="#s3-7">위반 사례 — 정북 사선</a></li><li class="sub"><a href="#s3-8">위반 사례 — 공동주택 채광</a></li><li class="sub"><a href="#s3-9">용어 해설·이용 안내 창</a></li><li class="sub"><a href="#s3-10">A4 계산서·출력</a></li><li class="sub"><a href="#s3-11">휴대전화 화면</a></li><li><a href="#ch4">4. 법령 해설</a></li><li class="sub"><a href="#s4-1">근거 체계</a></li><li class="sub"><a href="#s4-2">정북 사선 (§86①)</a></li><li class="sub"><a href="#s4-3">적용 제외 (§86②)</a></li><li class="sub"><a href="#s4-4">사이 시설·부지 (§86⑥)</a></li><li class="sub"><a href="#s4-5">공동주택 채광 (§86③1호)</a></li><li class="sub"><a href="#s4-6">동 간 거리 (§86③2호)</a></li><li class="sub"><a href="#s4-7">일영 계산</a></li><li class="sub"><a href="#s4-8">계산 범위·한계</a></li><li class="sub"><a href="#s4-9">법 제61조① 개정 예정</a></li><li class="sub"><a href="#s4-10">v5.0.6 판정·근거 정정</a></li><li><a href="#ch5">5. 실무 작업 방법</a></li><li class="sub"><a href="#s5-1">단계별 절차</a></li><li class="sub"><a href="#s5-2">허가 신청 전 확인</a></li><li><a href="#ch6">6. 문제 해결·FAQ</a></li><li><a href="#ch7">부록</a></li><li class="sub"><a href="#a1">예제 입력값</a></li><li class="sub"><a href="#a2">예제 결과</a></li><li class="sub"><a href="#a3">버전 변경 내역</a></li><li class="sub"><a href="#a4">용어</a></li></ol></nav><main><style>
+<div class="wrap"><nav class="toc" aria-label="목차"><details open><summary class="toc-sum">목차 <span aria-hidden="true">▾</span></summary><h2>목차</h2><ol><li><a href="#ch0">0. 이 매뉴얼에 대하여</a></li><li><a href="#ch1">1. 한눈에 보기</a></li><li class="sub"><a href="#s1-1">화면 구성</a></li><li class="sub"><a href="#s1-2">작업 탭·근거 표시</a></li><li class="sub"><a href="#s1-3">설치·보관·매뉴얼</a></li><li><a href="#ch2">2. 1분 따라하기</a></li><li><a href="#ch3">3. 화면별 기능 상세</a></li><li class="sub"><a href="#s3-1">① 공사 정보·용도지역</a></li><li class="sub"><a href="#s3-2">② 대지 및 건물 정보</a></li><li class="sub"><a href="#s3-3">③ 일영 분석 설정</a></li><li class="sub"><a href="#s3-4">종합 판정·검토 지표</a></li><li class="sub"><a href="#s3-5">단면도</a></li><li class="sub"><a href="#s3-6">시간대별 일영 분석</a></li><li class="sub"><a href="#s3-7">위반 사례 — 정북 사선</a></li><li class="sub"><a href="#s3-8">위반 사례 — 공동주택 채광</a></li><li class="sub"><a href="#s3-9">용어 해설·이용 안내 창</a></li><li class="sub"><a href="#s3-10">A4 계산서·출력</a></li><li class="sub"><a href="#s3-11">휴대전화 화면</a></li><li><a href="#ch4">4. 법령 해설</a></li><li class="sub"><a href="#s4-1">근거 체계</a></li><li class="sub"><a href="#s4-2">정북 사선 (§86①)</a></li><li class="sub"><a href="#s4-3">적용 제외 (§86②)</a></li><li class="sub"><a href="#s4-4">사이 시설·부지 (§86⑥)</a></li><li class="sub"><a href="#s4-5">공동주택 채광 (§86③1호)</a></li><li class="sub"><a href="#s4-6">동 간 거리 (§86③2호)</a></li><li class="sub"><a href="#s4-7">일영 계산</a></li><li class="sub"><a href="#s4-8">계산 범위·한계</a></li><li class="sub"><a href="#s4-9">법 제61조① 개정 예정</a></li><li class="sub"><a href="#s4-10">v5.0.6 판정·근거 정정</a></li><li><a href="#ch5">5. 실무 작업 방법</a></li><li class="sub"><a href="#s5-1">단계별 절차</a></li><li class="sub"><a href="#s5-2">허가 신청 전 확인</a></li><li><a href="#ch6">6. 문제 해결·FAQ</a></li><li><a href="#ch7">부록</a></li><li class="sub"><a href="#a1">예제 입력값</a></li><li class="sub"><a href="#a2">예제 결과</a></li><li class="sub"><a href="#a3">버전 변경 내역</a></li><li class="sub"><a href="#a4">용어</a></li></ol></details></nav><main><style>
 #fig-s03_card1,#fig-s05_card3{max-width:380px}
 #fig-s04_card2,#fig-s12_info{max-width:400px}
 #fig-s16_a4page{max-width:560px}
@@ -200,11 +251,11 @@ footer.foot{max-width:1240px;margin:0 auto;padding:0 24px 40px;color:var(--text2
 <p class="lead">예제 A로 6단계를 따라 하면 <b>최소 이격 6.75 m · 계획 이격 7 m · 채광 · 동 간 거리 모두 적합</b>이 나옵니다.</p>
 <ol class="steps">
 <li><b class="t">① 용도지역 · 유형</b>공사명 · 작성자를 넣고 용도지역 「제2종 일반주거지역」, 건축물 유형 「공동주택」을 고릅니다. 정북 사선 적용 대상이라는 안내가 나옵니다(<a href="#s3-1">3-1</a>).</li>
-<li><b class="t">② 높이 · 거리</b>건물 높이 13.5, 측정 부분 높이 13.5, 정북 경계선까지 거리 5를 넣습니다(<a href="#s3-2">3-2</a>).</li>
+<li><b class="t">② 높이 · 거리</b>건물 높이 13.5, 측정 부분 높이 13.5, 정북 경계선까지 거리 5. 사이 시설 · 부지 너비 4, 종류 「도로 · 광장 · 공공공지 · 녹지」. 특례 3종은 끕니다(<a href="#s3-2">3-2</a> · <a href="#s4-4">4-4</a>).</li>
 <li><b class="t">③ 공동주택 정보</b>채광창 이격거리 8, 마주보는 동 간격 8, 주택 유형 「일반 공동주택」(<a href="#s3-2">3-2</a>).</li>
-<li><b class="t">④ 사이 시설 · 특례</b>사이 시설 · 부지 너비 4, 종류 「도로 · 광장 · 공공공지 · 녹지」. 특례 3종은 끕니다(<a href="#s4-4">4-4</a>).</li>
-<li><b class="t">⑤ 검토 실행</b>대지 위도 「전라북도 익산 · 전주(35.87°N)」, 기준일 「동지」, 경계선 방위각 0 → 「☀️ 일조권 검토 실행」(<a href="#s3-3">3-3</a>).</li>
-<li><b class="t">⑥ 결과 · A4</b>종합 판정 「일조 기준 적합」을 확인하고 「📄 A4 계산서」 탭에서 「🖨️ 인쇄 / PDF 저장」 또는 「🖼️ JPG 저장」(<a href="#s3-10">3-10</a>).</li>
+<li><b class="t">④ 검토 실행 · 판정</b>대지 위도 「전라북도 익산 · 전주(35.87°N)」, 기준일 「동지」, 경계선 방위각 0을 확인하고 「☀️ 일조권 검토 실행」 → 종합 판정 「일조 기준 적합」(<a href="#s3-3">3-3</a> · <a href="#s3-4">3-4</a>).</li>
+<li><b class="t">⑤ 단면도 · 일영</b>단면도로 경계선(⑥) · 사선 위치를 보고, 시간대별 표에서 경계 방향 그림자와 일영 시간(참고)을 확인합니다(<a href="#s3-5">3-5</a> · <a href="#s3-6">3-6</a>).</li>
+<li><b class="t">⑥ A4 계산서</b>「📄 A4 계산서」 탭에서 「🖨️ 인쇄 / PDF 저장」 또는 「🖼️ JPG 저장」(<a href="#s3-10">3-10</a>).</li>
 </ol>
 <div class="k1"><div class="tbl"><table><thead><tr><th class="">항목</th><th class="">예제 A</th></tr></thead><tbody><tr><td class="">정북 사선 최소 이격</td><td class="">6.75 m 이상 (높이 13.5 m — 10 m 초과 → 높이의 1/2)</td></tr><tr><td class="">계획 이격</td><td class="">7 m = 경계 5 m + 사이 도로 4 m ÷ 2 (공동주택은 중심선, §86⑥) → 적합</td></tr><tr><td class="">공동주택 채광</td><td class="">높이 13.5 m ≤ 이격 8 m × 2 = 16 m → 적합</td></tr><tr><td class="">동 간 거리</td><td class="">8 m ≥ 높이 13.5 m × 0.5 = 6.75 m → 적합</td></tr><tr><td class="">일영(참고)</td><td class="">동지 09~15시 경계 넘는 그림자 6 h · 연속 일조 0 h</td></tr></tbody></table></div></div>
 <div class="tip"><b>확인</b>따라 한 결과가 위 표와 같으면 준비가 끝난 것입니다. 연속 일조 0 h는 <b>인접 대지경계선 위 한 점</b>이 동지 내내 그림자에 든다는 뜻의 참고값이며 판정에는 들어가지 않습니다(<a href="#s4-7">4-7</a>). 요약 스트립의 「기준 이격 6.8 m」는 6.75 m를 소수 첫째 자리로 보인 값입니다.</div>
@@ -271,7 +322,7 @@ footer.foot{max-width:1240px;margin:0 auto;padding:0 24px 40px;color:var(--text2
 <h3 id="s4-7">4-7. 일영 계산</h3>
 <div class="eq">sin h = sin φ · sin δ + cos φ · cos δ · cos H &nbsp;·&nbsp; δ = 23.45° × sin(360/365 × (n − 81))<span class="c">φ 위도 · δ 적위 · H 시간각(정오 0, 1시간 15°) · n 연중 일수(동지 355 · 하지 172 · 춘추분 79). 시각은 지방 평균 태양시 기준</span></div>
 <div class="eq">그림자 길이 L = H ÷ tan h &nbsp;→&nbsp; 경계 방향 성분 d = −L × cos(A − θ) &nbsp;→&nbsp; d ≥ 경계까지 거리이면 그림자<span class="c">A 태양 방위각(정북 0 · 시계 방향) · θ 경계선 방위각. ⑥ 적용 시 경계까지 거리 = 입력 거리 + 사이 너비</span></div>
-<p>일영 · 연속 일조 시간은 09:00 ~ 15:00을 <b>30분 구간 12개</b>로 나누고 각 구간 시작 시각의 상태로 셉니다(최대 6 h). 결과는 건물 높이의 그림자 끝이 <b>인접 대지경계선(한 점)</b>을 넘는지를 본 개념 계산입니다. 건물 폭 · 평면 형태 · 주변 건물 · 지형은 반영하지 않으므로, 단서(2시간 일조)로 동 간 거리를 정하려면 별도 일조 시뮬레이션으로 확인하십시오. 예제 A는 동지 정오에도 고도 30.7°라 그림자가 약 22.7 m로 경계(7 m)를 넘어 연속 일조가 0 h입니다.</p>
+<p>일영 · 연속 일조 시간은 09:00 ~ 15:00을 <b>30분 구간 12개</b>로 나누고 각 구간 시작 시각의 상태로 셉니다(최대 6 h). 결과는 건물 높이의 그림자 끝이 <b>인접 대지경계선(한 점)</b>을 넘는지를 본 개념 계산입니다. 건물 폭 · 평면 형태 · 주변 건물 · 지형은 반영하지 않으므로, 단서(2시간 일조)로 동 간 거리를 정하려면 별도 일조 시뮬레이션으로 확인하십시오. 예제 A는 동지 정오에도 고도 30.7°라 그림자가 약 22.8 m로 경계(7 m)를 넘어 연속 일조가 0 h입니다.</p>
 <h3 id="s4-8">4-8. 계산 범위·한계</h3>
 <div class="k1"><div class="tbl"><table><thead><tr><th class="">항목</th><th class="">내용</th></tr></thead><tbody><tr><td class="">판정하는 것</td><td class="">§86① 정북 사선(측정 부분 1개), §86② 특례 3종, §86⑥ 사이 시설 · 부지, §86③1호 채광 높이, §86③2호 가목 동 간 거리</td></tr><tr><td class="">판정하지 않는 것</td><td class="">건축조례 거리, 법 제61조③ 정남 방향 특례 지구, 법 제61조④ 2층 이하 8 m 이하 조례 특례, §86③ 단서(다세대 1 m 이상), 2호 나 ~ 마목 · 3호, §86⑦ 심의 특례, 부분별 다단 사선</td></tr><tr><td class="">참고값</td><td class="">일영 시간 · 연속 일조(개념 계산), 건물 폭</td></tr></tbody></table></div></div>
 <h3 id="s4-9">4-9. 법 제61조① 개정 예정</h3>
@@ -310,7 +361,7 @@ footer.foot{max-width:1240px;margin:0 auto;padding:0 24px 40px;color:var(--text2
 <h3 id="a4">A4. 용어</h3>
 <div class="brk"><div class="k1"><div class="tbl"><table><thead><tr><th class="">용어</th><th class="">뜻</th></tr></thead><tbody><tr><td class="">정북 사선제한</td><td class="">주거지역 건축물 각 부분을 정북 방향 인접 대지경계선에서 높이에 따라 띄우게 하는 제한(§86①)</td></tr><tr><td class="">측정 부분 높이</td><td class="">사선을 검토하는 건축물 부분의 지표면으로부터 높이</td></tr><tr><td class="">채광 높이 제한</td><td class="">공동주택 각 부분 높이를 채광창 벽면 → 인접 대지경계선 거리의 2배(4배) 이하로 하는 제한(§86③1호)</td></tr><tr><td class="">동 간 거리</td><td class="">같은 대지에서 마주보는 두 동 사이의 거리(§86③2호)</td></tr><tr><td class="">일영</td><td class="">건축물이 만드는 그림자. 동지에 가장 길다</td></tr><tr><td class="">경계선 방위각</td><td class="">정북 경계선에 수직인 방향의 방위각 — 정북 0, 동쪽 +, 서쪽 −</td></tr></tbody></table></div></div></div>
 </section></main></div>
-<footer class="foot">© 2026 김만민 건축사 · ㈜대성건축사사무소 · 일조권·사선제한 계산기 사용자 매뉴얼 Ver-5.0 · 건축법 제61조 · 시행령 제86조 <span class="rev">· 화면 대응 개정 2026-10-14</span></footer>
+<footer class="foot">© 2026 김만민 건축사 · ㈜대성건축사사무소 · 일조권·사선제한 계산기 사용자 매뉴얼 Ver-5.0 · 건축법 제61조 · 시행령 제86조 <span class="rev">· 화면 대응 개정 2026-10-14</span> <span class="rev">· 디자인 개정 2026-10-26</span></footer>
 <div class="pfoot"><span>일조권·사선제한 계산기 사용자 매뉴얼 Ver-5.0</span><span>2026-10-14</span></div>
 <div id="lb" role="dialog" aria-label="그림 확대"><img alt=""></div>
 <button class="totop" aria-label="맨 위로">↑</button>
@@ -331,5 +382,9 @@ footer.foot{max-width:1240px;margin:0 auto;padding:0 24px 40px;color:var(--text2
 (function(){document.querySelectorAll('.tbl').forEach(function(t){var tb=t.querySelector('table');if(!tb||!tb.tHead)return;
  if(tb.querySelector('td.num,th.num'))return;var hs=[].map.call(tb.tHead.rows[0].cells,function(c){return c.textContent.trim()});
  [].forEach.call(tb.tBodies[0].rows,function(r){[].forEach.call(r.cells,function(c,i){if(hs[i])c.setAttribute('data-th',hs[i])})});t.classList.add('stack');if(hs.length===2)t.classList.add('c2')})})();
+/* v-mh1 D3 읽기 진행 막대 · D4 좁은 화면 목차 접힘 */
+(function(){var b=document.querySelector('.mh-prog i');if(b){var f=function(){var h=document.documentElement,m=h.scrollHeight-h.clientHeight;b.style.width=(m>0?h.scrollTop/m*100:0)+'%';};addEventListener('scroll',f,{passive:true});addEventListener('resize',f);f();}
+ var d=document.querySelector('nav.toc details'),mq=matchMedia('(max-width:1024px)');if(d){var s=function(){d.open=!mq.matches;};s();(mq.addEventListener?mq.addEventListener('change',s):mq.addListener(s));
+ d.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){if(mq.matches)d.open=false;});});}})();
 </script>
 </body></html>
