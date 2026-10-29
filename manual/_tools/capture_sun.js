@@ -6,8 +6,10 @@ const VW=1440,VH=900,DSF=1.25,PORT=8897;
 /* 예제 A = 제2종 일반주거지역 다세대주택 — 높이 13.5 m · 측정 13.5 m · 정북 경계 5.0 m · 사이 도로 4 m(§86⑥ → 중심선 +2 m)
             · 채광창 이격 8 m · 동 간 8 m · 익산(35.87°N) · 동지 · 경계선 방위각 0°            → 적합
    예제 B = 제1종 일반주거지역 단독주택 — 높이 11 m · 측정 11 m · 경계 3.0 m                     → 정북 사선 위반(5.5 m 필요)
-   예제 C = 준주거지역 공동주택 — 높이 27 m · 채광창 이격 6 m(×4 = 24 m) · 동 간 15 m · 경계 2 m  → 채광 위반(사선 미적용) */
-const FREEZE=`(()=>{const T=new Date(2026,9,14,10,0,0).getTime();const D=Date;class F extends D{constructor(...a){if(a.length)super(...a);else super(T);}static now(){return T;}}window.Date=F;window.alert=()=>{};window.confirm=()=>true;try{localStorage.clear();}catch(e){}})()`;
+   예제 C = 준주거지역 공동주택 — 높이 27 m · 채광창 이격 6 m(×4 = 24 m) · 동 간 15 m · 경계 2 m  → 채광 위반(사선 미적용)
+   예제 D = 제2종 일반주거지역 단독주택 — 높이 14 m · 경계 5.0 m · 적용 기준일 2026-11-12 → 개정 법 §61① 5 m 이상 적합(현행이면 7 m 위반)
+   v5.1.0 — 예제 A · B · C는 적용 기준일 2026-10-30(현행 시행령 §86①)으로 고정 */
+const FREEZE=`(()=>{const T=new Date(2026,9,30,10,0,0).getTime();const D=Date;class F extends D{constructor(...a){if(a.length)super(...a);else super(T);}static now(){return T;}}window.Date=F;window.alert=()=>{};window.confirm=()=>true;try{localStorage.clear();}catch(e){}})()`;
 const HIDE='#toast,#pwa-install-bar,#ios-install-guide,#pwa-update-bar,.toast{display:none!important}#result-col{position:static!important;max-height:none!important;overflow:visible!important}';
 const HELP=`window.__vis=e=>e&&e.getClientRects().length>0;
 window.__card=t=>{const h=[...document.querySelectorAll('.sec-title,.diagram-title')].find(e=>__vis(e)&&e.textContent.trim().startsWith(t));return h?h.closest('.card'):null;};
@@ -19,7 +21,7 @@ window.__sv=(id,v)=>{const e=document.getElementById(id);e.value=v;e.dispatchEve
 window.__tab=i=>{document.querySelectorAll('.tab-bar-inner .tb:not(.tb-manual)')[i].click();};
 window.__quiet=f=>{const si=Element.prototype.scrollIntoView;Element.prototype.scrollIntoView=function(){};try{f();}finally{setTimeout(()=>{Element.prototype.scrollIntoView=si;},300);}};
 window.__set=c=>{document.getElementById('a4ProjName').value=c.pn||'';document.getElementById('a4Author').value=c.au||'';
- __sv('zone',c.zone);__sv('bldgType',c.type);__sv('bldgH',c.H);__sv('partH',c.partH);__sv('distBound',c.dist);
+ __sv('applDate',c.appl||'2026-10-30');__sv('zone',c.zone);__sv('bldgType',c.type);__sv('bldgH',c.H);__sv('partH',c.partH);__sv('distBound',c.dist);
  __sv('roadW',c.roadW||'');__sv('openSpace',c.os||'none');__sv('lightDist',c.ld||'');__sv('betweenDist',c.bd||'');__sv('aptZoneType',c.ht||'일반');
  __sv('bldgW',c.W||'');__sv('azimuth',c.az||0);__sv('latitude',c.lat||'35.87');
  ['ex1','ex2','ex3'].forEach(k=>document.getElementById(k).checked=!!c[k]);
@@ -28,20 +30,21 @@ window.__E={
  A:{pn:'익산시 ○○동 다세대주택 신축공사',au:'김만민',zone:'일반2종',type:'공동',H:13.5,partH:13.5,dist:5.0,roadW:4,os:'road',ld:8,bd:8,ht:'일반',W:18,az:0},
  B:{pn:'익산시 ○○동 단독주택 신축공사',au:'김만민',zone:'일반1종',type:'단독',H:11,partH:11,dist:3.0,W:12,az:0},
  C:{pn:'익산시 ○○동 오피스텔·공동주택 신축공사',au:'김만민',zone:'준주거',type:'공동',H:27,partH:27,dist:2.0,ld:6,bd:15,ht:'일반',W:30,az:0},
+ D:{pn:'익산시 ○○동 단독주택 신축공사',au:'김만민',zone:'일반2종',type:'단독',H:14,partH:14,dist:5.0,W:12,az:0,appl:'2026-11-12'},
 };
 window.__closeAll=()=>{try{closeModal('help-modal');}catch(e){}document.querySelectorAll('.info-bd.show').forEach(e=>e.classList.remove('show'));document.querySelectorAll('.info-arr.open').forEach(e=>e.classList.remove('open'));};
 window.__run=k=>__quiet(()=>{__closeAll();__tab(0);__set(__E[k]);window.scrollTo(0,0);});
 window.__ex=()=>{const d=_lastResult;if(!d)return null;
  return {zone:d.zone,type:d.bldgType,H:d.bldgH,partH:d.partH,dist:d.distBound,eff:+d.effDist.toFixed(3),mDist:+d.mDist.toFixed(3),six:d.sixApply,
   saApply:d.saseonApply,saOk:d.saseonOk,light:d.light,gap:d.gap,anyApply:d.anyApply,allOk:d.allOk,
-  shadow:d.shadowData.shadowH09_15,cont:d.shadowData.continuousSun,lat:d.lat,
+  shadow:d.shadowData.shadowH09_15,cont:d.shadowData.continuousSun,lat:d.lat,appl:d.applDate,nw:d.ruleNew,
   verdict:document.getElementById('verdict-box').innerText.replace(/\\s+/g,' ').trim(),
   sum:[...document.querySelectorAll('.sum-bar .sum-item')].map(e=>e.textContent.trim()),
   rows:d.shadowData.rows.filter(r=>r.inWin).map(r=>[r.time,r.alt,r.az,r.shadow,r.proj,r.inShadow?'그림자':r.sun?'일조':'일몰'])};};`;
 const SHOTS=[
  {id:'s01_overview',pre:"__run('A')",clip:'viewport',m:[['.tab-bar-inner','작업 탭'],['.sum-bar','요약 스트립'],['card:① 공사 정보','① 공사 정보 · 용도지역'],['card:② 대지','② 대지 및 건물 정보'],['#verdict-box','종합 판정'],['#metrics-grid','검토 지표 6종'],['#fab-group','초기화 · 이용안내']]},
  {id:'s02_tabs',clip:'.app-header',m:[['nth:.tab-bar-inner .tb|0','검토 입력·결과'],['nth:.tab-bar-inner .tb|1','A4 계산서'],['.tb-manual','매뉴얼'],['.hdr-right','근거 법령 · 시행일']]},
- {id:'s03_card1',clip:'card:① 공사 정보',m:[['#a4ProjName','① 공사명 · 작성자(A4 표제)'],['#zone','② 용도지역'],['#zone-notice','③ 적용 안내'],['#bldgType','④ 건축물 유형']]},
+ {id:'s03_card1',clip:'card:① 공사 정보',m:[['#a4ProjName','① 공사명 · 작성자(A4 표제)'],['#applDate','② 적용 기준일'],['#rule-notice','③ 적용 기준 안내(현행 · 개정)'],['#zone','④ 용도지역'],['#zone-notice','⑤ 적용 안내'],['#bldgType','⑥ 건축물 유형']]},
  {id:'s04_card2',clip:'card:② 대지',m:[['up:#bldgH|.fg','① 건물 높이'],['up:#partH|.fg','② 측정 부분 높이'],['up:#distBound|.fg','③ 경계선까지 거리'],['up:#lightDist|.fg','④ 채광창 이격거리'],['up:#betweenDist|.fg','⑤ 동 간 간격'],['up:#aptZoneType|.fg','⑥ 주택 유형'],['up:#roadW|.fg','⑦ 사이 시설·부지 너비'],['up:#openSpace|.fg','⑧ 사이 시설·부지 종류'],['up:#ex1|.toggle-row','⑨ 적용 제외 특례 3종']]},
  {id:'s05_card3',clip:'card:③ 일영',union:'.btn-row',m:[['#latitude','① 대지 위도'],['.radio-grp','② 분석 기준일'],['up:#bldgW|.fg','③ 건물 폭(참고)'],['up:#azimuth|.fg','④ 경계선 방위각'],['.calc-btn','⑤ 일조권 검토 실행']]},
  {id:'s06_result_a',clip:'#verdict-box',union:'#metrics-grid',m:[['#verdict-box','종합 판정'],['nth:.metric-card|0','최소 이격(기준)'],['nth:.metric-card|1','계획 이격(⑥ 중심선)'],['nth:.metric-card|2','일영 시간(참고)'],['nth:.metric-card|3','연속 일조(참고)'],['nth:.metric-card|4','공동주택 채광'],['nth:.metric-card|5','동 간 거리']]},
@@ -50,6 +53,7 @@ const SHOTS=[
  {id:'s09_law',clip:'card:📊 일조 시간',m:[]},
  {id:'s10_result_b',pre:"__run('B')",wait:800,clip:'#verdict-box',union:'#metrics-grid',m:[['#verdict-box','정북 사선 위반'],['nth:.metric-card|0','최소 이격 5.5 m'],['nth:.metric-card|1','계획 이격 3.0 m']]},
  {id:'s11_result_c',pre:"__run('C')",wait:800,clip:'#verdict-box',union:'#metrics-grid',m:[['#verdict-box','채광 위반 · 사선 미적용'],['nth:.metric-card|4','채광 한도 24 m'],['nth:.metric-card|5','동 간 거리 적합']]},
+ {id:'s20_result_d',pre:"__run('D')",wait:800,clip:'#verdict-box',union:'#metrics-grid',m:[['#verdict-box','개정 기준 적합'],['nth:.metric-card|0','최소 이격 5 m(법 §61①)'],['nth:.metric-card|1','계획 이격 5.0 m']]},
  {id:'s12_info',pre:"__run('A');document.querySelectorAll('.info-hd').forEach(h=>toggleAccordion(h));",wait:800,clip:'up:.info-item|.fi',m:[['nth:.info-item|0','일조 사선제한이란? · 법 개정 안내'],['nth:.info-item|1','일영 계산 원리'],['nth:.info-item|2','적용 제외 규정']]},
  {id:'s13_modal',pre:"__closeAll();openModal('guide')",wait:900,fixed:true,clip:'.modal-box',m:[]},
  {id:'s14_modal_law',pre:"switchMTabById('mt-law');document.querySelector('#help-modal .modal-body').scrollTop=0",wait:700,fixed:true,post:"__closeAll()",clip:'.modal-box',m:[]},
@@ -73,6 +77,7 @@ const SHOTS=[
   if(S.id==='s01_overview')ex.A=await pg.evaluate('__ex()');
   if(S.id==='s10_result_b')ex.B=await pg.evaluate('__ex()');
   if(S.id==='s11_result_c')ex.C=await pg.evaluate('__ex()');
+  if(S.id==='s20_result_d')ex.D=await pg.evaluate('__ex()');
   if(S.id==='s16_a4page')ex.A_a4=await pg.evaluate(()=>document.getElementById('a4Page').innerText.replace(/\s+/g,' '));
   const info=await pg.evaluate(({S,VW,VH})=>{
    const abs=e=>{const r=e.getBoundingClientRect();return {x:r.left+scrollX,y:r.top+scrollY,w:r.width,h:r.height};};
@@ -108,6 +113,6 @@ const SHOTS=[
  const miss=[];Object.entries(meta).forEach(([k,v])=>v.marks.forEach(m=>{if(m.miss)miss.push(k+':'+m.miss);else if(m.x<0||m.y<0||m.x+m.w>100.5||m.y+m.h>100.5||m.w<=0||m.h<=0)miss.push(k+':OUT '+m.label+' '+m.x+','+m.y+','+m.w+','+m.h);}));
  const sh=o=>o&&[o.verdict.slice(0,60),o.mDist,o.eff,o.saOk,o.light.apply&&[o.light.lim,o.light.ok],o.gap.apply&&[o.gap.req,o.gap.ok],o.shadow,o.cont];
  const strip=o=>JSON.stringify(o);
- console.log(JSON.stringify({A:sh(ex.A),B:sh(ex.B),C:sh(ex.C),same:strip(ex.A)===strip(ex.after),mobile:ex.mobile,sizes:Object.fromEntries(Object.entries(meta).map(([k,v])=>[k,v.w+'x'+v.h])),miss,errs:errs.slice(0,15)},null,1));
+ console.log(JSON.stringify({A:sh(ex.A),B:sh(ex.B),C:sh(ex.C),D:sh(ex.D),same:strip(ex.A)===strip(ex.after),mobile:ex.mobile,sizes:Object.fromEntries(Object.entries(meta).map(([k,v])=>[k,v.w+'x'+v.h])),miss,errs:errs.slice(0,15)},null,1));
  await b.close();s.close();
 })();

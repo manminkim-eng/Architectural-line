@@ -1,4 +1,5 @@
-// 일조사선 v5.0.6 판정 독립 대조 — usage: node verify_sun_judge.js (index.html 경로는 아래 path 상수). 경계 12건 + 무작위 300건
+// 일조사선 v5.1.0 판정 독립 대조 — usage: node verify_sun_judge.js (index.html 경로는 아래 path 상수). 경계 12건 + 법 제61조① 개정 경계 12건 + 무작위 300건
+// v5.1.0 — 적용 기준일(applDate) 2026-11-12 전후로 현행(시행령 §86①) · 개정(법 §61① 10m 초과 17m 이하 5m) 대조
 // 독립 검증 — 페이지 calculate() 결과(_lastResult)를 독립 구현과 대조
 const { chromium } = require('playwright');
 const path='file://'+require('path').resolve(__dirname,'../../index.html');
@@ -13,7 +14,8 @@ function ref(c){
   const isApt=c.type==='공동', res=R.includes(c.zone), ex=c.ex1||c.ex2||c.ex3;
   const sa=res&&!ex, six=c.os!=='none'&&c.roadW>0;
   const eff=c.dist+(six?(isApt?c.roadW/2:c.roadW):0);
-  const md=c.partH<=10?1.5:c.partH/2;
+  const nw=(c.appl||'2026-11-11')>='2026-11-12';
+  const md=c.partH<=10?1.5:(nw&&c.partH<=17?5:c.partH/2);
   const sok=!sa||eff>=md-1e-9;
   const ap=isApt&&c.zone!=='일반중심상업';
   const fac=(c.zone==='근린상업'||c.zone==='준주거')?4:2;
@@ -52,7 +54,12 @@ function rnd(a,b,st){return Math.round((a+Math.random()*(b-a))/st)*st;}
     {zone:'일반1종',type:'단독',H:15,partH:15,dist:3,roadW:0,os:'none',ld:0,bd:0,ht:'일반',ex1:0,ex2:1,ex3:0,az:0,lat:35.87,day:'winter'},
     {zone:'공업',type:types.find(t=>t!=='공동'),H:15,partH:15,dist:1,roadW:0,os:'none',ld:0,bd:0,ht:'일반',ex1:0,ex2:0,ex3:0,az:0,lat:35.87,day:'winter'},
   ];
-  const cases=[...fixed];
+  fixed.forEach(c=>c.appl='2026-11-11');
+  const B=(partH,dist,appl)=>({zone:'일반2종',type:'단독',H:Math.max(partH,3),partH,dist,roadW:0,os:'none',ld:0,bd:0,ht:'일반',ex1:0,ex2:0,ex3:0,az:0,lat:35.87,day:'winter',appl});
+  const lawNew=[ // 개정 경계 — 10m · 17m · 기준일 하루 차
+    B(10,1.5,'2026-11-12'),B(10.1,5,'2026-11-12'),B(10.1,4.99,'2026-11-12'),B(17,5,'2026-11-12'),B(17,4.99,'2026-11-12'),B(17.1,8.55,'2026-11-12'),
+    B(17.1,8.54,'2026-11-12'),B(14,5,'2026-11-11'),B(14,7,'2026-11-11'),B(14,5,'2026-11-12'),B(16,6,'2027-03-01'),B(16,6,'2026-11-11')];
+  const cases=[...fixed,...lawNew];
   const lats=await pg.$$eval('#latitude option',o=>o.map(x=>+x.value).filter(x=>x>0));
   for(let i=0;i<300;i++){
     const H=rnd(3,60,0.5); const partH=Math.max(0.5,rnd(0.5,H,0.5));
@@ -60,7 +67,7 @@ function rnd(a,b,st){return Math.round((a+Math.random()*(b-a))/st)*st;}
       roadW:Math.random()<.4?rnd(0,20,0.5):0,os:['none','park','road','river','vacant'][i%5],
       ld:Math.random()<.6?rnd(0,30,0.5):0,bd:Math.random()<.6?rnd(0,40,0.5):0,ht:Math.random()<.5?'일반':'도시형',
       ex1:Math.random()<.1?1:0,ex2:Math.random()<.1?1:0,ex3:Math.random()<.1?1:0,az:rnd(-90,90,1),
-      lat:lats[i%lats.length],day:['winter','summer','equinox'][i%3]});
+      lat:lats[i%lats.length],day:['winter','summer','equinox'][i%3],appl:i%2?'2026-11-12':'2026-11-11'});
   }
   let pass=0,fail=[]; const types_seen={};
   for(const c of cases){
@@ -69,18 +76,18 @@ function rnd(a,b,st){return Math.round((a+Math.random()*(b-a))/st)*st;}
       const sv=(id,v)=>{const e=document.getElementById(id); e.value=v; e.dispatchEvent(new Event('change',{bubbles:true}));};
       sv('zone',c.zone); sv('bldgType',c.type); sv('bldgH',c.H); sv('partH',c.partH); sv('distBound',c.dist);
       sv('roadW',c.roadW); sv('openSpace',c.os); sv('lightDist',c.ld||''); sv('betweenDist',c.bd||''); sv('aptZoneType',c.ht);
-      sv('azimuth',c.az); sv('latitude',c.lat);
+      sv('azimuth',c.az); sv('latitude',c.lat); sv('applDate',c.appl);
       ['ex1','ex2','ex3'].forEach(k=>document.getElementById(k).checked=!!c[k]);
       const r=document.querySelector('input[name="refDay"][value="'+c.day+'"]'); if(r) r.checked=true;
       _lastResult=null; calculate(); const d=_lastResult; if(!d) return null;
       return {sa:d.saseonApply,sok:d.saseonOk,eff:d.effDist,md:d.mDist,L:d.light,G:d.gap,any:d.anyApply,all:d.allOk,
         sh:d.shadowData.shadowH09_15,cont:d.shadowData.continuousSun,doy:d.doy,lat:d.lat,
-        verdict:(document.querySelector('#result-area, #resultArea, .verdict')||{}).innerText||''};
+        nw:d.ruleNew,verdict:(document.querySelector('#result-area, #resultArea, .verdict')||{}).innerText||''};
     },c);
     if(!got){fail.push(['null',c]);continue;}
     c.doy=got.doy; c.lat=got.lat;
     const e=ref(c);
-    const chk=[['사선적용',e.sa===got.sa],['사선판정',e.sok===got.sok],['유효이격',Math.abs(e.eff-got.eff)<1e-9],['최소이격',Math.abs(e.md-got.md)<1e-9],
+    const chk=[['사선적용',e.sa===got.sa],['사선판정',e.sok===got.sok],['유효이격',Math.abs(e.eff-got.eff)<1e-9],['최소이격',Math.abs(e.md-got.md)<1e-9],['기준선택',((c.appl||'')>='2026-11-12')===got.nw],
       ['채광적용',e.L.apply===got.L.apply],['채광판정',!e.L.apply||e.L.ok===got.L.ok],['동간적용',e.G.apply===got.G.apply],['동간판정',!e.G.apply||e.G.ok===got.G.ok],
       ['종합',e.any===got.any&&e.all===got.all],['일영',e.sh===got.sh],['연속일조',e.cont===got.cont]];
     const bad=chk.filter(x=>!x[1]).map(x=>x[0]);
