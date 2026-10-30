@@ -100,6 +100,8 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
 .tb:hover{color:#fff;background:rgba(255,255,255,.09);}
 .tb.active{color:#fff;background:#15803d;border-bottom-color:#86efac;}
 .tb.tb-manual{margin-left:auto;text-decoration:none;white-space:nowrap;}   /* v5.0.6 — 사용자 매뉴얼(탭 막대 오른쪽 끝) */
+.tb.tb-install{color:#86efac;}   /* v5.1.1 — 앱 설치(매뉴얼 오른쪽) */
+@media(max-width:480px){.tab-bar .tb{padding:11px 9px;} .tb.tb-install .tbi-t{display:none;}}   /* v5.1.1 — 좁은 화면 탭 4개 한 화면(앱 설치는 「📲 설치」) */
 .tab-panel{display:none;width:100%;}
 .tab-panel.active{display:block;}
 /* v5.0-HDR — 요약 스트립 (헤더 3층) */
@@ -621,6 +623,8 @@ footer{border-top-color:#e4e9f0;background:#fff;} .foot-nm{color:#15803d;} .foot
       <button class="tb active" onclick="goTab('main',this)">⌨️ 검토 입력·결과</button>
       <button class="tb" onclick="goTab('print',this)">📄 A4 계산서</button>
       <a class="tb tb-manual" href="./manual/" target="_blank" rel="noopener" title="사용자 매뉴얼 (새 창)" onclick="if(navigator.onLine===false){event.preventDefault();showToast('매뉴얼은 인터넷 연결 시 열립니다');}">📘 매뉴얼</a>
+      <!-- v5.1.1 — 앱 설치(탭 막대 오른쪽 끝 · 설치 지원 브라우저 · 아이폰에서만 표시, 설치 후 숨김) -->
+      <button type="button" class="tb tb-install" id="pwa-install-btn" onclick="pwaTriggerInstall()" title="홈 화면에 앱으로 설치" style="display:none">📲 <span class="tbi-t">앱 </span>설치</button>
     </div>
   </nav>
 </header>
@@ -1009,7 +1013,7 @@ footer{border-top-color:#e4e9f0;background:#fff;} .foot-nm{color:#15803d;} .foot
           <div class="mitem"><div class="mitem-t">높이 10m 초과 17m 이하</div><div class="mitem-d">현행 해당 높이의 <strong style="color:#15803d">1/2 이상</strong> → 개정 <strong style="color:#15803d">5m 이상</strong></div></div>
           <div class="mitem"><div class="mitem-t">높이 17m 초과 부분</div><div class="mitem-d">현행 · 개정 모두 해당 높이의 <strong style="color:#15803d">1/2 이상</strong></div></div>
           <div class="mitem"><div class="mitem-t">조례</div><div class="mitem-d">위 범위에서 <strong style="color:#15803d">건축조례로 정하는 거리 이상</strong> — 표의 값은 최소값</div></div>
-          <div class="mitem"><div class="mitem-t">적용 시점</div><div class="mitem-d">개정 법 제61조①(법률 제21880호, 2026. 8. 11. 공포) — 2026. 11. 12. 시행. 시행 후 건축허가 신청(건축위원회 심의 신청 포함) · 건축신고분부터 적용(부칙 제4조). 시행령 제86조①은 아직 개정 전 — 개정 기준은 상위법 구간 기준으로 계산</div>
+          <div class="mitem"><div class="mitem-t">적용 시점</div><div class="mitem-d">개정 법 제61조①(법률 제21880호, 2026. 8. 11. 공포) — 2026. 11. 12. 시행. 시행 후 건축허가 신청(건축위원회 심의 신청 포함) · 건축신고분부터 적용(부칙 제4조). 시행령 제86조①은 아직 개정 전 — 개정 기준은 상위법 구간 기준으로 계산</div></div>
         </div>
         <div class="msec">
           <div class="msec-title">제86조③ (공동주택 채광 이격)</div>
