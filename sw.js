@@ -1,11 +1,12 @@
 /* ═══════════════════════════════════════════════════
+   v6.1.0 2026-11-11 — 시행령 제86조① 삭제 · 제86조② 호 순서 변경(대통령령 제36817호, 2026-11-12 시행) 개정 메모 · 「아직 개정 전」 문구 정정 · 판 6.1 · 캐시명 v6.1.0
    v5.1.1 2026-10-30 — 도움말 창 닫힘 태그 누락 정정(설치 안내 띠 · iOS 안내 · 업데이트 띠가 숨은 도움말 창 안에 갇혀 보이지 않던 오류) · 탭 막대 「앱 설치」 단추 · 캐시명 v5.1.1
    v5.1.0 2026-10-30 — 건축법 제61조① 개정(법률 제21880호, 2026-11-12 시행) 적용 기준일 · 정북 이격 3구간 · 캐시명 v5.1.0
    S6 회차 2026-09-05 — R24①② 표 선 separate·mono 한글 폴백 소급 동반 캐시명 v5.0.5
    S5 회차 2026-09-04 — R23② JPG 엔진 행 나눔 소급 동반 캐시명 v5.0.4
    S3-0 회차 2026-09-04 — R27 html2canvas 클론 정화 동반 캐시명 v5.0.3
    R25 회차 2026-09-04 — 자기 접두어 캐시 조회 · cors 프리캐시 · opaque 가드 · 캐시명 v5.0.2 (S10)
-   일조권·사선제한 계산기  MANMIN Ver-5.1
+   일조권·사선제한 계산기  MANMIN Ver-6.1
    Service Worker — 오프라인 캐시 + 버전 업데이트  ·  ARCHITECT KIM MANMIN
    v5.0.0 (2026-09-03) — §11-3 navigate Network-first · §17-1 PREFIX · §18-7 ORPHAN · allSettled
 ═══════════════════════════════════════════════════ */
@@ -23,7 +24,7 @@ const mmMatch = (req, opt) => caches.keys()
   .then((ks) => ks.reduce((p, k) => p.then((r) => r || caches.open(k).then((c) => c.match(req, opt))), Promise.resolve(undefined)))
   .then((r) => (r && r.type === 'opaque' && req && req.mode === 'cors') ? undefined : r);
 
-const CACHE  = 'jiljo-v5.1.10';
+const CACHE  = 'jiljo-v6.1.0';
 const ORPHAN = ['jiljo-v1.0'];
 const ASSETS = [
   './', './index.html', './manifest.json',
