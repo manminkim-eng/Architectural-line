@@ -1,4 +1,5 @@
 /* ═══════════════════════════════════════════════════
+   v6.1.2 (2026-11-12) — Pretendard CSS SRI(integrity · crossorigin)(정밀검토 C2) — 화면 · 계산 · 인쇄 불변 · 작업지시서 §25-6-82 · 캐시명 v6.1.2 (종전 v6.1.1)
    v6.1.1 (2026-11-12) — 건물개요 공통 원본 MM-PROJECT v1.2 → v1.3(불러오기 창 표 칸 모양 고정 — 도구 CSS 가 새지 않음 · 저장값 같음, 정밀검토 C10) · 작업지시서 §25-6-80 · 판 6.1 · 캐시명 v6.1.1 (종전 v6.1.0)
    v6.1.0 2026-11-11 — 시행령 제86조① 삭제 · 제86조② 호 순서 변경(대통령령 제36817호, 2026-11-12 시행) 개정 메모 · 「아직 개정 전」 문구 정정 · 판 6.1 · 캐시명 v6.1.0
    v5.1.1 2026-10-30 — 도움말 창 닫힘 태그 누락 정정(설치 안내 띠 · iOS 안내 · 업데이트 띠가 숨은 도움말 창 안에 갇혀 보이지 않던 오류) · 탭 막대 「앱 설치」 단추 · 캐시명 v5.1.1
@@ -25,7 +26,7 @@ const mmMatch = (req, opt) => caches.keys()
   .then((ks) => ks.reduce((p, k) => p.then((r) => r || caches.open(k).then((c) => c.match(req, opt))), Promise.resolve(undefined)))
   .then((r) => (r && r.type === 'opaque' && req && req.mode === 'cors') ? undefined : r);
 
-const CACHE  = 'jiljo-v6.1.1';
+const CACHE  = 'jiljo-v6.1.2';
 const ORPHAN = ['jiljo-v1.0'];
 const ASSETS = [
   './', './index.html', './manifest.json',
