@@ -37,7 +37,7 @@
 > 건축법 제61조(법률 제21880호, 2026. 11. 12. 시행) · 건축법 시행령 제86조(대통령령 제36817호, 2026. 11. 12. 시행 — ① 삭제) 기준 | ARCHITECT KIM MANMIN
 
 🌐 **https://manminkim-eng.github.io/Architectural-line/**  
-📘 사용자 매뉴얼 : https://manminkim-eng.github.io/Architectural-line/manual/ (PDF 27쪽)
+📘 사용자 매뉴얼 : https://manminkim-eng.github.io/Architectural-line/manual/ (PDF 39쪽 · Ver-6.1)
 
 ## 주요 기능
 
