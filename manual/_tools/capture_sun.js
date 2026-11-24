@@ -2,13 +2,14 @@
 // 규격: 1440×900 · DSF 1.25 · serviceWorkers block · _marks.json(번호 배지 % 좌표) · _example.json(예제 검증값 — 앱에서 읽음)
 const {chromium}=require(process.env.MM_PW||'playwright');const fs=require('fs');const path=require('path');const {setup,server}=require('./serve');
 const repo=path.resolve(process.argv[2]),out=path.resolve(process.argv[3]);fs.mkdirSync(out,{recursive:true});
-const VW=1440,VH=900,DSF=1.25,PORT=8897;
+const VW=1440,VH=900,DSF=1.25,PORT=+(process.env.MM_PORT||8897);
 /* 예제 A = 제2종 일반주거지역 다세대주택 — 높이 13.5 m · 측정 13.5 m · 정북 경계 5.0 m · 사이 도로 4 m(§86⑥ → 중심선 +2 m)
             · 채광창 이격 8 m · 동 간 8 m · 익산(35.87°N) · 동지 · 경계선 방위각 0°            → 적합
    예제 B = 제1종 일반주거지역 단독주택 — 높이 11 m · 측정 11 m · 경계 3.0 m                     → 정북 사선 위반(5.5 m 필요)
    예제 C = 준주거지역 공동주택 — 높이 27 m · 채광창 이격 6 m(×4 = 24 m) · 동 간 15 m · 경계 2 m  → 채광 위반(사선 미적용)
    예제 D = 제2종 일반주거지역 단독주택 — 높이 14 m · 경계 5.0 m · 적용 기준일 2026-11-12 → 개정 법 §61① 5 m 이상 적합(현행이면 7 m 위반)
-   v5.1.0 — 예제 A · B · C는 적용 기준일 2026-10-30(현행 시행령 §86①)으로 고정 */
+   v5.1.0 — 예제 A · B · C는 적용 기준일 2026-10-30(종전 시행령 §86①)으로 고정
+   Ver-6.1(웹 v6.1.4) — s23 무효 입력 결과 지움 · s24 A4 최신성 경고 · s25 예제 D A4(개정 기준 근거) 추가 */
 const FREEZE=`(()=>{const T=new Date(2026,9,30,10,0,0).getTime();const D=Date;class F extends D{constructor(...a){if(a.length)super(...a);else super(T);}static now(){return T;}}window.Date=F;window.alert=()=>{};window.confirm=()=>true;try{localStorage.clear();}catch(e){}})()`;
 const HIDE='#toast,#pwa-install-bar,#ios-install-guide,#pwa-update-bar,.toast{display:none!important}#result-col{position:static!important;max-height:none!important;overflow:visible!important}';
 const HELP=`window.__vis=e=>e&&e.getClientRects().length>0;
@@ -44,7 +45,7 @@ window.__ex=()=>{const d=_lastResult;if(!d)return null;
 const SHOTS=[
  {id:'s01_overview',pre:"__run('A')",clip:'viewport',m:[['.tab-bar-inner','작업 탭'],['.sum-bar','요약 스트립'],['card:① 공사 정보','① 공사 정보 · 용도지역'],['card:② 대지','② 대지 및 건물 정보'],['#verdict-box','종합 판정'],['#metrics-grid','검토 지표 6종'],['#fab-group','초기화 · 이용안내']]},
  {id:'s02_tabs',clip:'.app-header',m:[['nth:.tab-bar-inner .tb|0','검토 입력·결과'],['nth:.tab-bar-inner .tb|1','A4 계산서'],['.tb-manual','매뉴얼'],['.hdr-right','근거 법령 · 시행일']]},
- {id:'s03_card1',clip:'card:① 공사 정보',m:[['#a4ProjName','① 공사명 · 작성자(A4 표제)'],['#applDate','② 적용 기준일'],['#rule-notice','③ 적용 기준 안내(현행 · 개정)'],['#zone','④ 용도지역'],['#zone-notice','⑤ 적용 안내'],['#bldgType','⑥ 건축물 유형']]},
+ {id:'s03_card1',clip:'card:① 공사 정보',m:[['#a4ProjName','① 공사명 · 작성자(A4 표제)'],['#applDate','② 적용 기준일'],['#rule-notice','③ 적용 기준 안내(종전 · 개정)'],['#zone','④ 용도지역'],['#zone-notice','⑤ 적용 안내'],['#bldgType','⑥ 건축물 유형']]},
  {id:'s04_card2',clip:'card:② 대지',m:[['up:#bldgH|.fg','① 건물 높이'],['up:#partH|.fg','② 측정 부분 높이'],['up:#distBound|.fg','③ 경계선까지 거리'],['up:#lightDist|.fg','④ 채광창 이격거리'],['up:#betweenDist|.fg','⑤ 동 간 간격'],['up:#aptZoneType|.fg','⑥ 주택 유형'],['up:#roadW|.fg','⑦ 사이 시설·부지 너비'],['up:#openSpace|.fg','⑧ 사이 시설·부지 종류'],['up:#ex1|.toggle-row','⑨ 적용 제외 특례 3종']]},
  {id:'s05_card3',clip:'card:③ 일영',union:'.btn-row',m:[['#latitude','① 대지 위도'],['.radio-grp','② 분석 기준일'],['up:#bldgW|.fg','③ 건물 폭(참고)'],['up:#azimuth|.fg','④ 경계선 방위각'],['.calc-btn','⑤ 일조권 검토 실행']]},
  {id:'s06_result_a',clip:'#verdict-box',union:'#metrics-grid',m:[['#verdict-box','종합 판정'],['nth:.metric-card|0','최소 이격(기준)'],['nth:.metric-card|1','계획 이격(⑥ 중심선)'],['nth:.metric-card|2','일영 시간(참고)'],['nth:.metric-card|3','연속 일조(참고)'],['nth:.metric-card|4','공동주택 채광'],['nth:.metric-card|5','동 간 거리']]},
@@ -59,6 +60,9 @@ const SHOTS=[
  {id:'s14_modal_law',pre:"switchMTabById('mt-law');document.querySelector('#help-modal .modal-body').scrollTop=0",wait:700,fixed:true,post:"__closeAll()",clip:'.modal-box',m:[]},
  {id:'s15_a4',pre:"__run('A');__tab(1);scrollTo(0,0)",wait:1500,clip:'viewport',m:[['.mm-btn-print','인쇄 / PDF'],['.mm-btn-jpg','JPG 저장'],['#a4Page','A4 검토 계산서']]},
  {id:'s16_a4page',clip:'#a4Page',crop:2600,m:[['nth:#a4Page .a4-sub|0','1. 검토 조건'],['nth:#a4Page .a4-sub|1','2. 판정 결과'],['nth:#a4Page .a4-sub|2','3. 높이 제한 검토'],['nth:#a4Page .a4-sub|3','4. 일조 시간(참고)']]},
+ {id:'s24_a4_stale',pre:"__run('A');__sv('bldgH','15');__tab(1);scrollTo(0,0)",wait:1200,clip:'#a4Page',crop:520,post:"__run('A')",m:[['.a4-stale','입력이 바뀌었습니다 — 다시 검토하세요']]},
+ {id:'s25_a4_d',pre:"__run('D');__tab(1);scrollTo(0,0)",wait:1500,clip:'#a4Page',crop:2600,m:[['nth:#a4Page .a4-sub|1','2. 판정 결과(법 제61조 제1항)'],['nth:#a4Page .a4-sub|2','3. 높이 제한 검토(법 제61조 제1항 · 시행령 제86조 제3항)']]},
+ {id:'s23_invalid',pre:"__run('A');__quiet(()=>{__sv('lightDist','-1');calculate();});scrollTo(0,0)",wait:900,clip:'.sum-bar',union:'#result-ph-card',post:"__run('A')",m:[['.sum-bar','요약 스트립 — 값 지움(—)'],['#result-ph-card','결과 판넬 대신 안내 카드']]},
  {id:"s21_proj_menu",pre:"__tab(0);localStorage.setItem('MANMIN_PROJECT_V1',JSON.stringify({\"사업명\": \"익산시 ○○동 근린생활시설 신축공사\", \"작성자\": \"김만민 건축사\", \"높이\": \"15.5\", \"updated\": \"2026-11-08 10:00\", \"from\": \"일조사선\"}));window.scrollTo(0,0);document.querySelector('.mm-proj-btn').click()",wait:700,clip:'viewport',post:"document.querySelectorAll('.mm-proj-menu').forEach(e=>e.remove())",m:[[".mm-proj-btn", "「🏢 건물개요」 단추(오른쪽 아래)"], [".mm-proj-menu button[data-a=\"save\"]", "저장 — 지금 값 담기"], [".mm-proj-menu button[data-a=\"load\"]", "불러오기"], [".mm-proj-menu button[data-a=\"exp\"]", "파일로 내보내기(.json)"], [".mm-proj-menu button[data-a=\"imp\"]", "파일 가져오기"]]},
  {id:"s22_proj_load",pre:"(()=>{window.__mmK=['사업명','작성자','높이'];window.__mmB=__mmK.map(k=>MMProject.fields(k).map(e=>e.value));const __sv=(e,v)=>{const d=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value');d.set.call(e,v);e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));};const e=MMProject.fields('사업명')[0];if(e)__sv(e,'');(()=>{const a=MMProject.fields('작성자')[0];if(a&&!a.value){const d=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value');d.set.call(a,'김만민');a.dispatchEvent(new Event('input',{bubbles:true}));}})();localStorage.setItem('MANMIN_PROJECT_V1',JSON.stringify({\"사업명\": \"익산시 ○○동 근린생활시설 신축공사\", \"작성자\": \"김만민 건축사\", \"높이\": \"15.5\", \"updated\": \"2026-11-08 10:00\", \"from\": \"일조사선\"}));MMProject.load();})()",wait:900,fixed:true,clip:'.mm-proj-dlg',post:"(()=>{document.querySelectorAll('.mm-proj-back').forEach(e=>e.remove());const __sv=(e,v)=>{const d=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value');d.set.call(e,v);e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));};__mmK.forEach((k,i)=>MMProject.fields(k).forEach((e,j)=>{if(e.value!==__mmB[i][j])__sv(e,__mmB[i][j]);}));localStorage.removeItem('MANMIN_PROJECT_V1');})()",m:[[".mm-proj-dlg input[type=checkbox]", "체크한 항목만 채움(빈 칸은 체크된 채로)"], [".mm-proj-dlg .mm-proj-warn", "이미 입력된 칸 — 직접 체크해야 덮어씀"], [".mm-proj-dlg .mm-proj-ok", "채우기"]]},
 ];
@@ -80,6 +84,9 @@ const SHOTS=[
   if(S.id==='s10_result_b')ex.B=await pg.evaluate('__ex()');
   if(S.id==='s11_result_c')ex.C=await pg.evaluate('__ex()');
   if(S.id==='s20_result_d')ex.D=await pg.evaluate('__ex()');
+  if(S.id==='s25_a4_d')ex.D_a4=await pg.evaluate(()=>document.getElementById('a4Page').innerText.replace(/\s+/g,' '));
+  if(S.id==='s23_invalid')ex.invalid=await pg.evaluate(()=>({last:_lastResult===null,ph:getComputedStyle(document.getElementById('result-ph-card')).display,panel:getComputedStyle(document.getElementById('result-panel')).display,a4:document.getElementById('a4-body').innerText.trim().slice(0,40),sum:[...document.querySelectorAll('.sum-bar .sum-item')].map(e=>e.textContent.trim())}));
+  if(S.id==='s24_a4_stale')ex.stale=await pg.evaluate(()=>{const e=document.querySelector('#a4Page .a4-stale');return e?e.innerText.trim():null;});
   if(S.id==='s16_a4page')ex.A_a4=await pg.evaluate(()=>document.getElementById('a4Page').innerText.replace(/\s+/g,' '));
   const info=await pg.evaluate(({S,VW,VH})=>{
    const abs=e=>{const r=e.getBoundingClientRect();return {x:r.left+scrollX,y:r.top+scrollY,w:r.width,h:r.height};};
