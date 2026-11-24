@@ -1,4 +1,5 @@
 /* ═══════════════════════════════════════════════════
+   v6.1.4 (2026-11-24) — 건축 1차 교차검증 반영: 무효 입력 뒤 결과 · 요약 · A4 지우기 · A4 최신성 안내 · 개정 기준 근거 법 제61조① 표기 · 영 §86③ 단서(다세대 채광) · 동 간 조례 · 법 §61③④ · 특례 3호 · ⑥ 선택지 안내 · A4 이격 용어 · 죽은 코드 정리 — 계산값 불변 · 캐시명 v6.1.4 (종전 v6.1.3)
    v6.1.3 (2026-11-12) — html2canvas 1.4.1 머리 태그 SRI(integrity sha384 · crossorigin) · 공통 인쇄 원본 MM-PRINT v1.0 → v1.1(지연 로더도 SRI)(정밀검토 B8 · html2canvas SRI) — 화면 · 계산 · 인쇄 불변 · 작업지시서 §25-6-87 · 캐시명 v6.1.3 (종전 v6.1.2)
    v6.1.2 (2026-11-12) — Pretendard CSS SRI(integrity · crossorigin)(정밀검토 C2) — 화면 · 계산 · 인쇄 불변 · 작업지시서 §25-6-82 · 캐시명 v6.1.2 (종전 v6.1.1)
    v6.1.1 (2026-11-12) — 건물개요 공통 원본 MM-PROJECT v1.2 → v1.3(불러오기 창 표 칸 모양 고정 — 도구 CSS 가 새지 않음 · 저장값 같음, 정밀검토 C10) · 작업지시서 §25-6-80 · 판 6.1 · 캐시명 v6.1.1 (종전 v6.1.0)
@@ -27,7 +28,7 @@ const mmMatch = (req, opt) => caches.keys()
   .then((ks) => ks.reduce((p, k) => p.then((r) => r || caches.open(k).then((c) => c.match(req, opt))), Promise.resolve(undefined)))
   .then((r) => (r && r.type === 'opaque' && req && req.mode === 'cors') ? undefined : r);
 
-const CACHE  = 'jiljo-v6.1.3';
+const CACHE  = 'jiljo-v6.1.4';
 const ORPHAN = ['jiljo-v1.0'];
 const ASSETS = [
   './', './index.html', './manifest.json',
